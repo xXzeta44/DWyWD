@@ -32,3 +32,11 @@ PD: Si te pasaron la carpeta, escribe en la terminal "pnpm install" para instala
 1. No toquen la carpeta de server o database, almenos que Daniel o Crisbel les avise carajo.
 2. Si hacen un cambio, avisenlo por el grupo de Whatsapp, porfavor.
 3. Cualquier error dentro del codigo, avisenlo y despues lo arreglan.
+
+# Paginas del prototipo AulaNexo
+
+- `../index.html`: portada, proyectos, novedades, calendario, videos, contacto y ubicacion.
+- `../cuenta.html`: inicio de sesion y registro en pantallas separadas.
+- `../gestion.html`: recursos y administracion para integrantes con sesion iniciada.
+
+Abre la carpeta desde un servidor local (por ejemplo, la extension Live Server de VS Code) para probar las cuentas entre paginas. Es solo una maqueta: los datos quedan en el navegador y no existe seguridad real ni almacenamiento compartido entre dispositivos.

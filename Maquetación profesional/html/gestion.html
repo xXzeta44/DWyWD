@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Espacio privado de gestión para la comunidad AulaNexo.">
+    <title>Espacio de estudiantes | AulaNexo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/aulanexo.css">
+</head>
+<body class="management-page">
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="index.html">
+                <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M7 28.5 20 6l13 22.5H7Z" stroke="currentColor" stroke-width="2.5" stroke-linejoin="round"/><path d="m14 28.5 6-10 6 10M11 22h18" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg></span>
+                <span><strong>AulaNexo</strong><small>Espacio de estudiantes</small></span>
+            </a>
+            <div class="header-actions"><a class="text-link" href="index.html">Ver sitio ↗</a><button id="logout-button" class="button button-secondary" type="button">Cerrar sesión</button></div>
+        </div>
+    </header>
+    <main class="management-main container">
+        <section class="management-welcome">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Espacio privado · Comunidad AulaNexo</p>
+            <h1>Hola, <span id="member-name">estudiante.</span></h1>
+            <p>Organiza las novedades, actividades y recursos que compartimos en el taller.</p>
+        </section>
+
+        <section class="manage-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">01 — Publicaciones</p><h2>Agregar contenido</h2></div></div>
+            <form id="content-form" class="form-card management-form">
+                <div class="form-row">
+                    <div><label for="content-type">Tipo de contenido</label><select id="content-type" name="type"><option value="news">Noticia breve</option><option value="event">Actividad / calendario</option><option value="resource">Recurso para estudiantes</option></select></div>
+                    <div><label for="content-date">Fecha de actividad</label><input id="content-date" name="date" type="date"></div>
+                </div>
+                <label for="content-title">Título</label><input id="content-title" name="title" type="text" placeholder="Escribe un título claro" required>
+                <label for="content-description">Descripción</label><textarea id="content-description" name="description" rows="3" placeholder="¿Qué deben saber los demás?" required></textarea>
+                <label for="content-link">Enlace del recurso <span class="label-optional">(opcional, debe comenzar con https://)</span></label><input id="content-link" name="link" type="url" placeholder="https://">
+                <button class="button button-primary" type="submit">Agregar a la página <span aria-hidden="true">↗</span></button>
+            </form>
+        </section>
+
+        <section class="manage-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">02 — Noticias</p><h2>Artículos breves</h2></div><p>Edita o elimina una publicación con sus botones.</p></div>
+            <div class="manage-card-grid" id="news-list"></div>
+        </section>
+        <section class="manage-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">03 — Calendario</p><h2>Actividades del grupo</h2></div></div>
+            <div class="manage-card-grid" id="event-list"></div>
+        </section>
+        <section class="manage-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">04 — Biblioteca</p><h2>Recursos para estudiantes</h2></div></div>
+            <div class="manage-card-grid" id="managed-resource-list"></div>
+        </section>
+
+        <section class="manage-section users-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">05 — Integrantes</p><h2>Cuentas registradas</h2></div><p>En esta maqueta las cuentas se guardan en este navegador.</p></div>
+            <form id="user-form" class="form-card management-form user-form">
+                <h3>Agregar una cuenta</h3>
+                <div class="form-row">
+                    <div><label for="user-name">Nombre de usuario</label><input id="user-name" name="name" type="text" autocomplete="username" required></div>
+                    <div><label for="user-email">Correo electrónico</label><input id="user-email" name="email" type="email" autocomplete="email" required></div>
+                </div>
+                <label for="user-password">Contraseña temporal</label><input id="user-password" name="password" type="password" minlength="8" autocomplete="new-password" required>
+                <button class="button button-secondary" type="submit">Crear cuenta</button>
+            </form>
+            <div class="manage-card-grid user-list" id="user-list"></div>
+        </section>
+
+        <section class="manage-section">
+            <div class="section-heading compact-heading"><div><p class="eyebrow">06 — Ubicaciones</p><h2>Configura el mapa</h2></div><p>Usa solo direcciones que las personas involucradas acepten compartir.</p></div>
+            <form id="map-form" class="form-card management-form">
+                <label for="map-search">Dirección del centro educativo</label><input id="map-search" name="location" type="text" placeholder="Nombre del centro, ciudad o dirección" required>
+                <label for="map-members">Otros puntos autorizados <span class="label-optional">(uno por línea: nombre: dirección)</span></label><textarea id="map-members" name="points" rows="4" placeholder="Punto de encuentro: dirección"></textarea>
+                <button class="button button-primary" type="submit">Guardar ubicaciones</button>
+            </form>
+            <div class="map-preview" id="map-preview" aria-live="polite"></div>
+        </section>
+    </main>
+    <footer class="site-footer"><div class="container footer-inner"><span>© <span id="current-year"></span> AulaNexo</span><a class="text-link" href="index.html">Volver a la página principal ↗</a></div></footer>
+    <script src="script/common.js"></script>
+    <script src="script/members.js"></script>
+</body>
+</html>
