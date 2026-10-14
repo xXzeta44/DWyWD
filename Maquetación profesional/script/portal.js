@@ -1,4 +1,6 @@
 const { readList, safeText, formatDate } = window.AulaNexo;
+let galleryObjectUrls = [];
+let videoObjectUrls = [];
 
 function renderCards(target, items, label) {
     if (!target) return;
@@ -12,7 +14,96 @@ function renderCards(target, items, label) {
 }
 
 renderCards(document.querySelector("#news-list"), readList("news"), "Artículo breve");
-renderCards(document.querySelector("#event-list"), readList("events").sort((a, b) => (a.date || "").localeCompare(b.date || "")), "Actividad académica");
+initializeCalendar();
+renderGallery().catch(showGalleryError);
+renderVideos().catch(showVideoError);
+
+function initializeCalendar() {
+    const calendar = document.querySelector("#event-calendar");
+    if (!calendar) return;
+
+    const grid = document.querySelector("#calendar-grid");
+    const monthLabel = document.querySelector("#calendar-month");
+    const details = document.querySelector("#calendar-day-details");
+    const events = readList("events");
+    const today = new Date();
+    let displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    let selectedDate = toDateKey(today);
+
+    document.querySelector("#calendar-prev").addEventListener("click", () => {
+        displayedMonth = new Date(displayedMonth.getFullYear(), displayedMonth.getMonth() - 1, 1);
+        selectedDate = toDateKey(displayedMonth);
+        renderCalendar();
+    });
+    document.querySelector("#calendar-next").addEventListener("click", () => {
+        displayedMonth = new Date(displayedMonth.getFullYear(), displayedMonth.getMonth() + 1, 1);
+        selectedDate = toDateKey(displayedMonth);
+        renderCalendar();
+    });
+    document.querySelector("#calendar-today").addEventListener("click", () => {
+        displayedMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+        selectedDate = toDateKey(today);
+        renderCalendar();
+    });
+
+    function renderCalendar() {
+        const year = displayedMonth.getFullYear();
+        const month = displayedMonth.getMonth();
+        const firstDayOffset = (new Date(year, month, 1).getDay() + 6) % 7;
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const cellCount = Math.ceil((firstDayOffset + daysInMonth) / 7) * 7;
+        const weekdayNames = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+        monthLabel.textContent = new Intl.DateTimeFormat("es", { month: "long", year: "numeric" }).format(displayedMonth);
+
+        const weekdayCells = weekdayNames.map((name) => `<div class="calendar-weekday" role="columnheader">${name}</div>`);
+        const dayCells = Array.from({ length: cellCount }, (_, index) => {
+            const dayNumber = index - firstDayOffset + 1;
+            if (dayNumber < 1 || dayNumber > daysInMonth) {
+                return '<div class="calendar-day is-outside" role="gridcell" aria-hidden="true"></div>';
+            }
+
+            const date = new Date(year, month, dayNumber);
+            const dateKey = toDateKey(date);
+            const dayEvents = events.filter((event) => event.date === dateKey);
+            const isToday = dateKey === toDateKey(today);
+            const selected = dateKey === selectedDate;
+            const eventLabels = dayEvents.slice(0, 2).map((event) => `<span class="calendar-event">${safeText(event.title)}</span>`).join("");
+            const overflow = dayEvents.length > 2 ? `<span class="calendar-more">+${dayEvents.length - 2} más</span>` : "";
+
+            return `<div class="calendar-day${isToday ? " is-today" : ""}${selected ? " is-selected" : ""}" role="gridcell">
+                <button class="calendar-date" type="button" data-calendar-date="${dateKey}" aria-label="${safeText(date.toLocaleDateString("es", { dateStyle: "full" }))}${dayEvents.length ? `, ${dayEvents.length} actividades` : ""}" aria-pressed="${selected}">${dayNumber}</button>
+                <div class="calendar-events">${eventLabels}${overflow}</div>
+            </div>`;
+        });
+
+        grid.innerHTML = [...weekdayCells, ...dayCells].join("");
+        grid.querySelectorAll("[data-calendar-date]").forEach((button) => {
+            button.addEventListener("click", () => {
+                selectedDate = button.dataset.calendarDate;
+                renderCalendar();
+            });
+        });
+        renderSelectedDay();
+    }
+
+    function renderSelectedDay() {
+        const selectedEvents = events.filter((event) => event.date === selectedDate);
+        const date = new Date(`${selectedDate}T12:00:00`);
+        const heading = date.toLocaleDateString("es", { weekday: "long", day: "numeric", month: "long" });
+        details.innerHTML = `<h4>${safeText(heading)}</h4>${selectedEvents.length
+            ? `<ul>${selectedEvents.map((event) => `<li><strong>${safeText(event.title)}</strong>${event.description ? `<span>${safeText(event.description)}</span>` : ""}</li>`).join("")}</ul>`
+            : "<p>No hay actividades programadas para este día.</p>"}`;
+    }
+
+    renderCalendar();
+}
+
+function toDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
 
 const menuToggle = document.querySelector("#menu-toggle");
 const mainNav = document.querySelector("#main-nav");
@@ -37,8 +128,24 @@ if (contactForm && contactStatus) {
     contactForm.addEventListener("submit", (event) => {
         event.preventDefault();
         if (!event.currentTarget.reportValidity()) return;
-        const name = new FormData(event.currentTarget).get("name");
-        contactStatus.textContent = `Gracias, ${name}. Este formulario de demostración no envía el mensaje.`;
+        const data = new FormData(event.currentTarget);
+        const messages = readList("messages");
+        messages.push({
+            id: window.AulaNexo.createId(),
+            name: String(data.get("name")).trim(),
+            email: String(data.get("email")).trim(),
+            message: String(data.get("message")).trim(),
+            date: new Date().toISOString()
+        });
+        try {
+            window.AulaNexo.saveList("messages", messages);
+        } catch (error) {
+            console.error(error);
+            contactStatus.textContent = "No se pudo guardar tu mensaje. Inténtalo de nuevo.";
+            return;
+        }
+        const name = data.get("name");
+        contactStatus.textContent = `Gracias, ${name}. Tu mensaje se guardó para que el equipo lo revise.`;
         event.currentTarget.reset();
     });
 }
@@ -73,20 +180,72 @@ function renderMap() {
     if (emptyState) emptyState.classList.add("hidden");
 }
 
-document.querySelectorAll("[id$='-file']").forEach((input) => {
-    input.addEventListener("change", () => {
-        const file = input.files?.[0];
-        if (!file) return;
-        const video = document.querySelector(`#${input.id.replace("-file", "")}`);
-        if (video.dataset.objectUrl) URL.revokeObjectURL(video.dataset.objectUrl);
-        video.dataset.objectUrl = URL.createObjectURL(file);
-        video.src = video.dataset.objectUrl;
-        video.load();
-    });
-});
-
 const currentYear = document.querySelector("#current-year");
 if (currentYear) {
     currentYear.textContent = String(new Date().getFullYear());
 }
 renderMap();
+
+async function renderGallery() {
+    const target = document.querySelector("#project-grid");
+    if (!target) return;
+    galleryObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+    galleryObjectUrls = [];
+    const items = readList("gallery");
+    if (!items.length) {
+        target.innerHTML = '<p class="image-note">Todavía no hay publicaciones en la galería.</p>';
+        return;
+    }
+    const cards = await Promise.all(items.map(async (item, index) => {
+        let imageUrl = item.image;
+        if (item.assetId) {
+            imageUrl = URL.createObjectURL(await requireAsset(item.assetId));
+            galleryObjectUrls.push(imageUrl);
+        }
+        return `<article class="project-card${index === 0 ? " project-feature" : ""}">
+            <img src="${safeText(imageUrl)}" alt="${safeText(item.title)}" loading="lazy">
+            <div class="project-caption"><span>Galería del grupo</span><h3>${safeText(item.title)}</h3><p>${safeText(item.description)}</p></div>
+        </article>`;
+    }));
+    target.innerHTML = cards.join("");
+}
+
+async function renderVideos() {
+    const target = document.querySelector("#video-grid");
+    if (!target) return;
+    videoObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+    videoObjectUrls = [];
+    const items = readList("videos").filter((item) => item.assetId).sort((a, b) => a.slot.localeCompare(b.slot));
+    if (!items.length) {
+        target.innerHTML = '<p class="image-note">Aún no hay videos publicados.</p>';
+        return;
+    }
+    target.innerHTML = (await Promise.all(items.map(async (item) => {
+        const blob = await window.AulaNexo.readAsset(item.assetId);
+        if (!blob) throw new Error(`No se encontró el archivo del video "${item.title}".`);
+        const url = URL.createObjectURL(blob);
+        videoObjectUrls.push(url);
+        return `<article class="video-card">
+            <video controls preload="metadata" aria-label="${safeText(item.title)}"><source src="${safeText(url)}" type="${safeText(blob.type)}"></video>
+            <div class="video-info"><span>En primera persona</span><h3>${safeText(item.title)}</h3></div>
+        </article>`;
+    }))).join("");
+}
+
+async function requireAsset(id) {
+    const blob = await window.AulaNexo.readAsset(id);
+    if (!blob) throw new Error("No se encontró el archivo de una publicación de la galería.");
+    return blob;
+}
+
+function showGalleryError(error) {
+    console.error(error);
+    const target = document.querySelector("#project-grid");
+    if (target) target.innerHTML = '<p class="image-note">No se pudo cargar la galería. Inténtalo de nuevo más tarde.</p>';
+}
+
+function showVideoError(error) {
+    console.error(error);
+    const target = document.querySelector("#video-grid");
+    if (target) target.innerHTML = '<p class="image-note">No se pudieron cargar los videos publicados.</p>';
+}

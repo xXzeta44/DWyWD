@@ -3,9 +3,13 @@
         news: "aulanexo-news",
         events: "aulanexo-events",
         resources: "aulanexo-resources",
+        gallery: "aulanexo-gallery",
+        videos: "aulanexo-videos",
+        messages: "aulanexo-messages",
         users: "aulanexo-users",
         map: "aulanexo-map",
-        currentUser: "aulanexo-current-user"
+        currentUser: "aulanexo-current-user",
+        members: "aulanexo-members"
     };
 
     const samples = {
@@ -20,8 +24,88 @@
         resources: [
             { id: "resource-1", title: "Guía para organizar un proyecto", description: "Pasos sencillos para planear una idea, repartir tareas y registrar avances.", link: "" }
         ],
-        users: []
+        gallery: [
+            { id: "gallery-1", title: "Prototipos con propósito", description: "Proyecto de taller · Diseño · Trabajo en equipo", image: "../proyectos1.jpeg" },
+            { id: "gallery-2", title: "Aprender experimentando", description: "Experiencia académica · Investigación · Práctica", image: "../img/foto grupo.jpeg" },
+            { id: "gallery-3", title: "Pequeñas ideas, grandes pasos", description: "En el taller · Creatividad · Innovación", image: "../proyectos1.jpeg" }
+        ],
+        videos: [],
+        messages: [],
+        users: [],
+        members: []
     };
+
+    const assetDatabaseName = "aulanexo-assets";
+
+    function openAssetDatabase() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(assetDatabaseName, 1);
+            request.onupgradeneeded = () => {
+                request.result.createObjectStore("assets", { keyPath: "id" });
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error ?? new Error("No se pudo abrir el almacenamiento de archivos."));
+            request.onblocked = () => reject(new Error("El almacenamiento de archivos está bloqueado por otra pestaña."));
+        });
+    }
+
+    async function saveAsset(blob, id = createId()) {
+        const database = await openAssetDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction("assets", "readwrite");
+            transaction.objectStore("assets").put({ id, blob });
+            transaction.oncomplete = () => {
+                database.close();
+                resolve(id);
+            };
+            transaction.onerror = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo guardar el archivo."));
+            };
+            transaction.onabort = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo guardar el archivo."));
+            };
+        });
+    }
+
+    async function readAsset(id) {
+        const database = await openAssetDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction("assets", "readonly");
+            const request = transaction.objectStore("assets").get(id);
+            request.onsuccess = () => resolve(request.result?.blob ?? null);
+            transaction.oncomplete = () => database.close();
+            transaction.onerror = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo leer el archivo."));
+            };
+            transaction.onabort = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo leer el archivo."));
+            };
+        });
+    }
+
+    async function deleteAsset(id) {
+        const database = await openAssetDatabase();
+        return new Promise((resolve, reject) => {
+            const transaction = database.transaction("assets", "readwrite");
+            transaction.objectStore("assets").delete(id);
+            transaction.oncomplete = () => {
+                database.close();
+                resolve();
+            };
+            transaction.onerror = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo eliminar el archivo."));
+            };
+            transaction.onabort = () => {
+                database.close();
+                reject(transaction.error ?? new Error("No se pudo eliminar el archivo."));
+            };
+        });
+    }
 
     function readList(name) {
         const saved = localStorage.getItem(keys[name]);
@@ -84,5 +168,5 @@
         };
     }
 
-    window.AulaNexo = { keys, readList, saveList, createId, safeText, formatDate, currentUser, passwordHash, makeUser };
+    window.AulaNexo = { keys, readList, saveList, createId, safeText, formatDate, currentUser, passwordHash, makeUser, saveAsset, readAsset, deleteAsset };
 })();
