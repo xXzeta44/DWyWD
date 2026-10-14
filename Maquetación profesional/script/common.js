@@ -132,6 +132,28 @@
         return node.innerHTML;
     }
 
+    function isGoogleMapsUrl(value) {
+        try {
+            const url = new URL(String(value));
+            const host = url.hostname.toLowerCase();
+            const googleDomain = host === "google.com" || host.endsWith(".google.com");
+            return url.protocol === "https:" && !url.username && !url.password && !url.port && (
+                host === "maps.app.goo.gl" ||
+                (host === "goo.gl" && url.pathname.startsWith("/maps")) ||
+                (googleDomain && (host === "maps.google.com" || url.pathname.startsWith("/maps")))
+            );
+        } catch {
+            return false;
+        }
+    }
+
+    function googleMapsUrl(value) {
+        const location = String(value ?? "").trim();
+        return isGoogleMapsUrl(location)
+            ? location
+            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
+    }
+
     function formatDate(value) {
         if (!value) return "";
         const date = new Date(`${value}T12:00:00`);
@@ -168,5 +190,5 @@
         };
     }
 
-    window.AulaNexo = { keys, readList, saveList, createId, safeText, formatDate, currentUser, passwordHash, makeUser, saveAsset, readAsset, deleteAsset };
+    window.AulaNexo = { keys, readList, saveList, createId, safeText, formatDate, currentUser, passwordHash, makeUser, saveAsset, readAsset, deleteAsset, isGoogleMapsUrl, googleMapsUrl };
 })();

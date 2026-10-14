@@ -1339,6 +1339,93 @@ h3 {
     margin: 12px 0 0;
 }
 
+.featured-team-slots {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.featured-team-slot {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--paper);
+}
+
+.featured-team-slot.is-empty {
+    border-style: dashed;
+}
+
+.featured-team-slot .eyebrow {
+    margin-bottom: 8px;
+}
+
+.featured-team-slot h3 {
+    overflow-wrap: anywhere;
+    font-size: 1.05rem;
+}
+
+.featured-team-slot > p:not(.eyebrow) {
+    margin-bottom: 0;
+    color: var(--muted);
+    font-size: .86rem;
+    overflow-wrap: anywhere;
+}
+
+.featured-team-slot .button {
+    margin-top: 14px;
+}
+
+.member-registry-heading {
+    margin-top: 12px;
+}
+
+.featured-members {
+    margin-top: 58px;
+}
+
+.featured-member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.featured-member-card {
+    min-width: 0;
+}
+
+.featured-member-card h3 {
+    overflow-wrap: anywhere;
+}
+
+.featured-member-photo, .featured-member-photo-placeholder {
+    display: grid;
+    width: 100%;
+    height: 210px;
+    margin-bottom: 20px;
+    place-items: center;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.featured-member-photo-placeholder {
+    color: var(--blue);
+    background: var(--wash);
+    font-size: 2rem;
+}
+
+.featured-member-card.is-pending {
+    border-style: dashed;
+}
+
+.featured-member-card .member-record-details a, .member-list .member-record-details a {
+    color: var(--blue-dark);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
 .member-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
 }
@@ -1393,6 +1480,18 @@ h3 {
     margin: 0;
     overflow-wrap: anywhere;
     font-size: .78rem;
+}
+
+.member-featured-toggle {
+    display: flex !important;
+    align-items: center;
+    gap: 9px;
+    margin: 18px 0 12px !important;
+}
+
+.member-featured-toggle input {
+    width: auto;
+    margin: 0;
 }
 
 .map-preview {
@@ -1509,6 +1608,25 @@ h3 {
         gap: 23px;
         margin-top: 42px;
     }
+    .featured-members {
+        margin-top: 42px;
+    }
+    .featured-member-grid, .featured-team-slots {
+        gap: 9px;
+    }
+    .featured-member-card {
+        padding: 15px;
+    }
+    .featured-member-photo, .featured-member-photo-placeholder {
+        height: 145px;
+    }
+    .featured-member-card .member-record-details > div {
+        grid-template-columns: 1fr;
+        gap: 2px;
+    }
+    .featured-team-slot {
+        padding: 13px;
+    }
     .value-card {
         padding-right: 0;
     }
@@ -1600,6 +1718,33 @@ h3 {
     }
     .member-list {
         grid-template-columns: 1fr;
+    }
+    .featured-member-card {
+        padding: 9px;
+    }
+    .featured-member-card .eyebrow {
+        font-size: .58rem;
+    }
+    .featured-member-card h3 {
+        font-size: .9rem;
+    }
+    .featured-member-photo, .featured-member-photo-placeholder {
+        height: 90px;
+        margin-bottom: 10px;
+    }
+    .featured-member-card .member-record-details {
+        gap: 5px;
+    }
+    .featured-member-card .member-record-details dt,
+    .featured-member-card .member-record-details dd {
+        font-size: .68rem;
+    }
+    .featured-team-slot {
+        padding: 9px;
+    }
+    .featured-team-slot .button {
+        padding: 7px;
+        font-size: .68rem;
     }
 }
 

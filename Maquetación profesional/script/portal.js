@@ -1,6 +1,8 @@
 const { readList, safeText, formatDate } = window.AulaNexo;
 let galleryObjectUrls = [];
 let videoObjectUrls = [];
+let featuredMemberObjectUrls = [];
+let featuredMembersRenderId = 0;
 
 function renderCards(target, items, label) {
     if (!target) return;
@@ -14,9 +16,89 @@ function renderCards(target, items, label) {
 }
 
 renderCards(document.querySelector("#news-list"), readList("news"), "Artículo breve");
+refreshFeaturedMembers();
+window.addEventListener("storage", (event) => {
+    if (event.key === window.AulaNexo.keys.members) refreshFeaturedMembers();
+});
+window.addEventListener("pageshow", refreshFeaturedMembers);
+document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") refreshFeaturedMembers();
+});
 initializeCalendar();
 renderGallery().catch(showGalleryError);
 renderVideos().catch(showVideoError);
+
+function refreshFeaturedMembers() {
+    renderFeaturedMembers().catch(showFeaturedMembersError);
+}
+
+async function renderFeaturedMembers() {
+    const target = document.querySelector("#featured-member-list");
+    if (!target) return;
+    const renderId = ++featuredMembersRenderId;
+    const nextObjectUrls = [];
+
+    try {
+        const featured = readList("members")
+            .filter((member) => member.featured)
+            .sort((a, b) => Number(a.listNumber) - Number(b.listNumber))
+            .slice(0, 3);
+        const cards = await Promise.all(Array.from({ length: 3 }, async (_, index) => {
+            const member = featured[index];
+            if (!member) {
+                return `
+                <article class="content-card featured-member-card is-pending">
+                    <div class="featured-member-photo-placeholder" aria-hidden="true">+</div>
+                    <p class="eyebrow">Integrante ${index + 1}</p>
+                    <h3>Perfil por completar</h3>
+                    <p>Completa los datos desde el espacio de gestión.</p>
+                </article>`;
+            }
+
+            let photo = "";
+            if (member.assetId) {
+                const blob = await window.AulaNexo.readAsset(member.assetId);
+                if (!blob) throw new Error(`No se encontró la foto de ${member.firstName} ${member.lastName}.`);
+                photo = URL.createObjectURL(blob);
+                nextObjectUrls.push(photo);
+            }
+            const name = `${member.firstName} ${member.lastName}`.trim();
+            const address = String(member.address ?? "").trim();
+            const phone = String(member.phone ?? "").trim();
+            const mapUrl = window.AulaNexo.googleMapsUrl(address);
+            const phoneHref = phone.replace(/[^\d+]/g, "");
+
+            return `
+            <article class="content-card featured-member-card">
+                ${photo
+                    ? `<img class="featured-member-photo" src="${safeText(photo)}" alt="Foto de ${safeText(name)}" loading="lazy">`
+                    : '<div class="featured-member-photo-placeholder" aria-hidden="true">◎</div>'}
+                <p class="eyebrow">Integrante del equipo</p>
+                <h3>${safeText(name)}</h3>
+                <dl class="member-record-details">
+                    <div><dt>Edad</dt><dd>${safeText(member.age ? `${member.age} años` : "Por completar")}</dd></div>
+                    <div><dt>Teléfono</dt><dd>${phone
+                        ? `<a href="tel:${safeText(phoneHref)}">${safeText(phone)}</a>`
+                        : "Por completar"}</dd></div>
+                    <div><dt>Ubicación</dt><dd>${address
+                        ? `<a href="${safeText(mapUrl)}" target="_blank" rel="noopener noreferrer">Abrir ubicación en Google Maps ↗</a>`
+                        : "Por completar"}</dd></div>
+                </dl>
+            </article>`;
+        }));
+
+        if (renderId !== featuredMembersRenderId) {
+            nextObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+            return;
+        }
+        featuredMemberObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+        featuredMemberObjectUrls = nextObjectUrls;
+        target.innerHTML = cards.join("");
+    } catch (error) {
+        nextObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+        throw error;
+    }
+}
 
 function initializeCalendar() {
     const calendar = document.querySelector("#event-calendar");
@@ -248,4 +330,10 @@ function showVideoError(error) {
     console.error(error);
     const target = document.querySelector("#video-grid");
     if (target) target.innerHTML = '<p class="image-note">No se pudieron cargar los videos publicados.</p>';
+}
+
+function showFeaturedMembersError(error) {
+    console.error(error);
+    const target = document.querySelector("#featured-member-list");
+    if (target) target.innerHTML = '<p class="image-note">No se pudieron cargar los perfiles del equipo.</p>';
 }

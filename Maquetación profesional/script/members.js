@@ -80,6 +80,14 @@ if (!currentUser) {
     memberForm.addEventListener("submit", handleMemberSubmit);
     document.querySelector("#member-cancel").addEventListener("click", resetMemberForm);
     document.querySelector("#member-list").addEventListener("click", handleMemberAction);
+    document.querySelector("#featured-team-slots").addEventListener("click", (event) => {
+        if (!event.target.closest("[data-team-slot]")) return;
+        resetMemberForm();
+        document.querySelector("#member-featured").checked = true;
+        document.querySelector("#member-form").scrollIntoView({ behavior: "smooth", block: "start" });
+        document.querySelector("#member-list-number").focus({ preventScroll: true });
+    });
+    document.querySelector("#featured-team-slots").addEventListener("click", handleMemberAction);
 
     document.querySelector("#map-form").addEventListener("submit", (event) => {
         event.preventDefault();
@@ -160,6 +168,35 @@ async function renderGallery() {
         </article>`;
     }));
     target.innerHTML = cards.join("");
+}
+
+function renderFeaturedTeamSlots(members) {
+    const target = document.querySelector("#featured-team-slots");
+    if (!target) return;
+    const featured = members.filter((member) => member.featured)
+        .sort((a, b) => Number(a.listNumber) - Number(b.listNumber));
+
+    target.innerHTML = Array.from({ length: 3 }, (_, index) => {
+        const member = featured[index];
+        if (!member) {
+            return `
+            <article class="featured-team-slot is-empty">
+                <p class="eyebrow">Casilla ${index + 1}</p>
+                <h3>Disponible</h3>
+                <p>Aún no hay un integrante asignado.</p>
+                <button class="button button-secondary" type="button" data-team-slot>Completar esta casilla</button>
+            </article>`;
+        }
+        return `
+        <article class="featured-team-slot">
+            <p class="eyebrow">Casilla ${index + 1} · Lista ${safeText(member.listNumber)}</p>
+            <h3>${safeText(member.firstName)} ${safeText(member.lastName)}</h3>
+            <p>${safeText(member.age)} años · ${safeText(member.phone)}</p>
+            <div class="management-actions">
+                <button type="button" data-member-action="edit" data-id="${safeText(member.id)}">Editar perfil</button>
+            </div>
+        </article>`;
+    }).join("");
 }
 
 async function handleGallerySubmit(event) {
@@ -433,6 +470,7 @@ async function renderMembers() {
     memberObjectUrls.forEach((url) => URL.revokeObjectURL(url));
     memberObjectUrls = [];
     const members = readList("members").slice().sort((a, b) => Number(a.listNumber) - Number(b.listNumber));
+    renderFeaturedTeamSlots(members);
     if (!members.length) {
         target.innerHTML = '<p class="image-note">Todavía no hay integrantes registrados.</p>';
         return;
@@ -449,12 +487,12 @@ async function renderMembers() {
         <article class="content-card">
             <div class="member-card-heading">
                 ${photo ? `<img class="managed-member-photo" src="${safeText(photo)}" alt="Foto de ${safeText(member.firstName)} ${safeText(member.lastName)}" loading="lazy">` : ""}
-                <div><p class="eyebrow">Lista ${safeText(member.listNumber)}</p><h3>${safeText(member.firstName)} ${safeText(member.lastName)}</h3></div>
+                <div><p class="eyebrow">Lista ${safeText(member.listNumber)}${member.featured ? " · Equipo de presentación" : ""}</p><h3>${safeText(member.firstName)} ${safeText(member.lastName)}</h3></div>
             </div>
             <dl class="member-record-details">
                 <div><dt>Edad</dt><dd>${safeText(member.age)} años</dd></div>
                 <div><dt>Teléfono</dt><dd>${safeText(member.phone)}</dd></div>
-                <div><dt>Dirección</dt><dd>${safeText(member.address)}</dd></div>
+                <div><dt>Ubicación</dt><dd><a href="${safeText(app.googleMapsUrl(member.address))}" target="_blank" rel="noopener noreferrer">Abrir en Google Maps ↗</a></dd></div>
             </dl>
             <div class="management-actions">
                 <button type="button" data-member-action="edit" data-id="${safeText(member.id)}">Editar</button>
@@ -463,6 +501,7 @@ async function renderMembers() {
         </article>`;
     }));
     target.innerHTML = cards.join("");
+    renderFeaturedTeamSlots(members);
 }
 
 async function handleMemberSubmit(event) {
@@ -474,8 +513,18 @@ async function handleMemberSubmit(event) {
     const id = String(data.get("id"));
     const listNumber = String(data.get("listNumber")).trim();
     const existingIndex = members.findIndex((member) => member.id === id);
+    const featured = data.get("featured") === "on";
+    const address = String(data.get("address")).trim();
     if (members.some((member) => member.listNumber === listNumber && member.id !== id)) {
         showStatus("#member-status", "Ya existe un integrante con ese número de lista.");
+        return;
+    }
+    if (!app.isGoogleMapsUrl(address)) {
+        showStatus("#member-status", "Pega un enlace válido de Google Maps para la ubicación del integrante.");
+        return;
+    }
+    if (featured && members.filter((member) => member.featured && member.id !== id).length >= 3) {
+        showStatus("#member-status", "Solo puedes mostrar a tres integrantes en la presentación. Desmarca otro perfil para continuar.");
         return;
     }
 
@@ -483,6 +532,10 @@ async function handleMemberSubmit(event) {
     const file = document.querySelector("#member-photo").files[0];
     if (file && !file.type.startsWith("image/")) {
         showStatus("#member-status", "Selecciona un archivo de imagen válido.");
+        return;
+    }
+    if (featured && !file && !existing?.assetId) {
+        showStatus("#member-status", "Agrega una foto para mostrar este perfil en la presentación.");
         return;
     }
 
@@ -493,7 +546,8 @@ async function handleMemberSubmit(event) {
         lastName: String(data.get("lastName")).trim(),
         age: String(data.get("age")).trim(),
         phone: String(data.get("phone")).trim(),
-        address: String(data.get("address")).trim(),
+        address,
+        featured,
         ...(existing?.assetId ? { assetId: existing.assetId } : {})
     };
     let newAssetId;
@@ -575,7 +629,8 @@ async function handleMemberAction(event) {
     document.querySelector("#member-last-name").value = member.lastName;
     document.querySelector("#member-age").value = member.age;
     document.querySelector("#member-phone").value = member.phone;
-    document.querySelector("#member-address").value = member.address;
+    document.querySelector("#member-address").value = app.googleMapsUrl(member.address);
+    document.querySelector("#member-featured").checked = Boolean(member.featured);
     document.querySelector("#member-submit").textContent = "Guardar cambios";
     document.querySelector("#member-cancel").classList.remove("hidden");
     showStatus("#member-status", `Editando a ${member.firstName} ${member.lastName}.`);
@@ -586,6 +641,7 @@ function resetMemberForm() {
     document.querySelector("#member-form").reset();
     document.querySelector("#member-id").value = "";
     document.querySelector("#member-photo").value = "";
+    document.querySelector("#member-featured").checked = false;
     document.querySelector("#member-submit").textContent = "Agregar integrante";
     document.querySelector("#member-cancel").classList.add("hidden");
     showStatus("#member-status", "");

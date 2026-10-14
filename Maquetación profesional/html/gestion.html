@@ -107,7 +107,9 @@
         </section>
 
         <section class="manage-section">
-            <div class="section-heading compact-heading"><div><p class="eyebrow">09 — Padrón</p><h2>Registro de integrantes</h2></div><p>Administra los datos de contacto del grupo. Se guardan en este navegador.</p></div>
+            <div class="section-heading compact-heading"><div><p class="eyebrow">09 — Equipo</p><h2>Integrantes de la presentación</h2></div><p>Completa estas tres casillas. Los perfiles que agregues aquí también aparecerán debajo de la presentación en la página principal.</p></div>
+            <div class="featured-team-slots" id="featured-team-slots" aria-live="polite"></div>
+            <div class="section-heading compact-heading member-registry-heading"><div><p class="eyebrow">Padrón</p><h2>Agregar o editar integrantes</h2></div><p>Completa los datos y marca la casilla para incluir a la persona en el equipo de presentación.</p></div>
             <form id="member-form" class="form-card management-form member-form">
                 <input id="member-id" name="id" type="hidden">
                 <div class="form-row">
@@ -119,8 +121,9 @@
                     <div><label for="member-last-name">Apellido</label><input id="member-last-name" name="lastName" type="text" autocomplete="family-name" required></div>
                 </div>
                 <label for="member-phone">Número de teléfono</label><input id="member-phone" name="phone" type="tel" autocomplete="tel" required>
-                <label for="member-address">Dirección</label><textarea id="member-address" name="address" rows="2" autocomplete="street-address" required></textarea>
-                <label for="member-photo">Foto del estudiante <span class="label-optional">(opcional, formato de imagen)</span></label><input id="member-photo" name="photo" type="file" accept="image/*">
+                <label for="member-address">Ubicación de Google Maps <span class="label-optional">(pega el enlace compartido del lugar)</span></label><input id="member-address" name="address" type="url" autocomplete="url" placeholder="https://maps.app.goo.gl/..." required>
+                <label for="member-photo">Foto del estudiante <span class="label-optional">(necesaria para mostrarlo en la presentación)</span></label><input id="member-photo" name="photo" type="file" accept="image/*">
+                <label class="member-featured-toggle" for="member-featured"><input id="member-featured" name="featured" type="checkbox">Incluir en una de las tres casillas de la presentación</label>
                 <div class="management-form-actions">
                     <button class="button button-primary" id="member-submit" type="submit">Agregar integrante</button>
                     <button class="button button-secondary hidden" id="member-cancel" type="button">Cancelar edición</button>
