@@ -15,19 +15,30 @@ function renderCards(target, items, label) {
         </article>`).join("");
 }
 
-renderCards(document.querySelector("#news-list"), readList("news"), "Artículo breve");
-refreshFeaturedMembers();
-window.addEventListener("storage", (event) => {
-    if (event.key === window.AulaNexo.keys.members) refreshFeaturedMembers();
+window.AulaNexo.ready.then(() => {
+    if (!window.AulaNexo.currentUser()) {
+        window.location.replace("cuenta.html");
+        return;
+    }
+    renderCards(document.querySelector("#news-list"), readList("news"), "Artículo breve");
+    refreshFeaturedMembers();
+    initializeCalendar();
+    renderGallery().catch(showGalleryError);
+    renderVideos().catch(showVideoError);
+    renderMap();
+    window.addEventListener("pageshow", () => {
+        window.AulaNexo.refresh().then(refreshFeaturedMembers).catch(showFeaturedMembersError);
+    });
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            window.AulaNexo.refresh().then(refreshFeaturedMembers).catch(showFeaturedMembersError);
+        }
+    });
+}).catch((error) => {
+    console.error("No se pudo iniciar el sitio.", error);
+    const target = document.querySelector("#news-list");
+    if (target) target.textContent = `No se pudo conectar con el servidor local: ${error.message}`;
 });
-window.addEventListener("pageshow", refreshFeaturedMembers);
-document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") refreshFeaturedMembers();
-});
-initializeCalendar();
-renderGallery().catch(showGalleryError);
-renderVideos().catch(showVideoError);
-
 function refreshFeaturedMembers() {
     renderFeaturedMembers().catch(showFeaturedMembersError);
 }
@@ -207,23 +218,22 @@ if (menuToggle && mainNav) {
 const contactForm = document.querySelector("#contact-form");
 const contactStatus = document.querySelector("#contact-status");
 if (contactForm && contactStatus) {
-    contactForm.addEventListener("submit", (event) => {
+    contactForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         if (!event.currentTarget.reportValidity()) return;
         const data = new FormData(event.currentTarget);
-        const messages = readList("messages");
-        messages.push({
-            id: window.AulaNexo.createId(),
-            name: String(data.get("name")).trim(),
-            email: String(data.get("email")).trim(),
-            message: String(data.get("message")).trim(),
-            date: new Date().toISOString()
-        });
         try {
-            window.AulaNexo.saveList("messages", messages);
+            await window.AulaNexo.request("/api/contact", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    name: String(data.get("name")).trim(),
+                    email: String(data.get("email")).trim(),
+                    message: String(data.get("message")).trim()
+                })
+            });
         } catch (error) {
-            console.error(error);
-            contactStatus.textContent = "No se pudo guardar tu mensaje. Inténtalo de nuevo.";
+            contactStatus.textContent = `No se pudo guardar tu mensaje: ${error.message}`;
             return;
         }
         const name = data.get("name");
@@ -233,9 +243,8 @@ if (contactForm && contactStatus) {
 }
 
 function renderMap() {
-    const saved = localStorage.getItem(window.AulaNexo.keys.map);
-    if (!saved) return;
-    const config = JSON.parse(saved);
+    const config = window.AulaNexo.readMap();
+    if (!config) return;
     const center = typeof config?.center === "string" ? config.center.trim() : "";
     const points = Array.isArray(config?.points) ? config.points.filter(Boolean) : [];
     if (!center) return;

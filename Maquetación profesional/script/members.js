@@ -1,22 +1,34 @@
 const app = window.AulaNexo;
 const { readList, saveList, createId, safeText, formatDate, makeUser } = app;
-const currentUser = app.currentUser();
+let currentUser = null;
 let galleryObjectUrls = [];
 let videoObjectUrls = [];
 let memberObjectUrls = [];
 
-if (!currentUser) {
-    window.location.replace("cuenta.html");
-} else {
+app.ready.then(() => {
+    currentUser = app.currentUser();
+    if (!currentUser || currentUser.role !== "admin") {
+        if (currentUser) {
+            window.location.replace("cuenta.html");
+            return;
+        }
+        window.location.replace("cuenta.html");
+        return;
+    }
+
     document.querySelector("#member-name").textContent = `${currentUser.name}.`;
     renderManagedContent();
     renderUsers();
     renderMembers().catch((error) => showStatus("#member-status", `No se pudo cargar el registro: ${error.message}`));
     renderMap();
 
-    document.querySelector("#logout-button").addEventListener("click", () => {
-        sessionStorage.removeItem(app.keys.currentUser);
-        window.location.replace("cuenta.html");
+    document.querySelector("#logout-button").addEventListener("click", async () => {
+        try {
+            await app.logout();
+            window.location.replace("cuenta.html");
+        } catch (error) {
+            showStatus("#member-status", `No se pudo cerrar la sesión: ${error.message}`);
+        }
     });
 
     document.querySelector("#content-type").addEventListener("change", (event) => {
@@ -32,7 +44,7 @@ if (!currentUser) {
     });
     document.querySelector("#managed-video-list").addEventListener("click", handleVideoAction);
 
-    document.querySelector("#content-form").addEventListener("submit", (event) => {
+    document.querySelector("#content-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const type = String(data.get("type"));
@@ -50,9 +62,13 @@ if (!currentUser) {
             date: String(data.get("date")),
             link
         });
-        saveList(listName, list);
-        event.currentTarget.reset();
-        renderManagedContent();
+        try {
+            await saveList(listName, list);
+            event.currentTarget.reset();
+            renderManagedContent();
+        } catch (error) {
+            alert(`No se pudo guardar el contenido: ${error.message}`);
+        }
     });
 
     document.querySelector("#user-form").addEventListener("submit", async (event) => {
@@ -66,8 +82,7 @@ if (!currentUser) {
             return;
         }
         try {
-            users.push(await makeUser(String(data.get("name")), email, String(data.get("password"))));
-            saveList("users", users);
+            await makeUser(String(data.get("name")), email, String(data.get("password")));
             form.reset();
             renderUsers();
         } catch (error) {
@@ -88,7 +103,7 @@ if (!currentUser) {
     });
     document.querySelector("#featured-team-slots").addEventListener("click", handleMemberAction);
 
-    document.querySelector("#map-form").addEventListener("submit", (event) => {
+    document.querySelector("#map-form").addEventListener("submit", async (event) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const center = String(data.get("location")).trim();
@@ -102,14 +117,22 @@ if (!currentUser) {
             const location = separator < 0 ? line.trim() : line.slice(separator + 1).trim();
             return location ? { label: label || location, location } : null;
         }).filter(Boolean);
-        localStorage.setItem(app.keys.map, JSON.stringify({ center, points }));
-        renderMap();
+        try {
+            await app.saveMap({ center, points });
+            renderMap();
+        } catch (error) {
+            showStatus("#member-status", `No se pudo guardar el mapa: ${error.message}`);
+        }
     });
 
     renderGallery().catch((error) => showStatus("#gallery-status", error.message));
     renderVideos().catch((error) => showStatus("#video-status", error.message));
     renderMessages();
-}
+}).catch((error) => {
+    console.error("No se pudo iniciar la zona de gestión.", error);
+    const status = document.querySelector("#member-status");
+    if (status) status.textContent = `No se pudo conectar con el servidor local: ${error.message}`;
+});
 
 function renderManagedContent() {
     renderList(document.querySelector("#news-list"), "news", "Noticia breve");
@@ -238,7 +261,7 @@ async function handleGallerySubmit(event) {
         };
         if (existing) list[index] = item;
         else list.push(item);
-        saveList("gallery", list);
+        await saveList("gallery", list);
         listSaved = true;
         const oldAssetIds = [
             file ? existing?.assetId : null,
@@ -286,7 +309,12 @@ async function handleGalleryAction(event) {
     if (button.dataset.galleryAction === "delete") {
         if (!confirm(`¿Eliminar "${list[index].title}" de la galería?`)) return;
         const [deleted] = list.splice(index, 1);
-        saveList("gallery", list);
+        try {
+            await saveList("gallery", list);
+        } catch (error) {
+            showStatus("#gallery-status", `No se pudo eliminar la publicación: ${error.message}`);
+            return;
+        }
         const cleanupErrors = [];
         for (const assetId of [deleted.assetId, deleted.videoAssetId].filter(Boolean)) {
             try {
@@ -380,7 +408,7 @@ async function handleVideoSubmit(event) {
         };
         if (existing) list[index] = item;
         else list.push(item);
-        saveList("videos", list);
+        await saveList("videos", list);
         listSaved = true;
         if (file && existing) await app.deleteAsset(existing.assetId);
         form.reset();
@@ -409,8 +437,8 @@ async function handleVideoAction(event) {
     if (index < 0) return;
     if (!confirm(`¿Eliminar el video "${list[index].title}"?`)) return;
     const [deleted] = list.splice(index, 1);
-    saveList("videos", list);
     try {
+        await saveList("videos", list);
         await app.deleteAsset(deleted.assetId);
         showStatus("#video-status", "Video eliminado.");
         await renderVideos();
@@ -441,7 +469,7 @@ function showStatus(selector, message) {
     document.querySelector(selector).textContent = message;
 }
 
-function handleContentAction(event) {
+async function handleContentAction(event) {
     const button = event.currentTarget;
     const type = button.dataset.type;
     const list = readList(type);
@@ -476,8 +504,12 @@ function handleContentAction(event) {
             }
         }
     }
-    saveList(type, list);
-    renderManagedContent();
+    try {
+        await saveList(type, list);
+        renderManagedContent();
+    } catch (error) {
+        alert(`No se pudo guardar el contenido: ${error.message}`);
+    }
 }
 
 function renderUsers() {
@@ -492,7 +524,9 @@ function renderUsers() {
             </div>
         </article>`).join("");
     target.querySelectorAll("[data-user-action]").forEach((button) => {
-        button.addEventListener("click", handleUserAction);
+        button.addEventListener("click", (event) => {
+            handleUserAction(event).catch((error) => alert(`No se pudo actualizar la cuenta: ${error.message}`));
+        });
     });
 }
 
@@ -589,7 +623,7 @@ async function handleMemberSubmit(event) {
         }
         if (existingIndex >= 0) members[existingIndex] = member;
         else members.push(member);
-        saveList("members", members);
+        await saveList("members", members);
     } catch (error) {
         let detail = error.message;
         if (newAssetId) {
@@ -631,7 +665,7 @@ async function handleMemberAction(event) {
         if (!confirm(`¿Eliminar a ${members[index].firstName} ${members[index].lastName} del registro?`)) return;
         const [deleted] = members.splice(index, 1);
         try {
-            saveList("members", members);
+            await saveList("members", members);
         } catch (error) {
             showStatus("#member-status", `No se pudo eliminar el integrante: ${error.message}`);
             return;
@@ -678,7 +712,7 @@ function resetMemberForm() {
     showStatus("#member-status", "");
 }
 
-function handleUserAction(event) {
+async function handleUserAction(event) {
     const button = event.currentTarget;
     const users = readList("users");
     const index = users.findIndex((user) => user.id === button.dataset.id);
@@ -688,9 +722,9 @@ function handleUserAction(event) {
         if (!confirm(`¿Eliminar la cuenta de ${users[index].name}?`)) return;
         const deletingCurrentUser = users[index].id === currentUser.id;
         users.splice(index, 1);
-        saveList("users", users);
+        await saveList("users", users);
         if (deletingCurrentUser) {
-            sessionStorage.removeItem(app.keys.currentUser);
+            await app.logout();
             window.location.replace("cuenta.html");
             return;
         }
@@ -709,7 +743,7 @@ function handleUserAction(event) {
             return;
         }
         users[index] = { ...users[index], name: name.trim(), email: normalizedEmail };
-        saveList("users", users);
+        await saveList("users", users);
     }
     renderUsers();
 }
@@ -723,9 +757,8 @@ function isSafeLink(value) {
 }
 
 function renderMap() {
-    const saved = localStorage.getItem(app.keys.map);
-    if (!saved) return;
-    const config = JSON.parse(saved);
+    const config = app.readMap();
+    if (!config) return;
     const center = typeof config?.center === "string" ? config.center.trim() : "";
     const points = Array.isArray(config?.points) ? config.points.filter(Boolean) : [];
     if (!center) return;

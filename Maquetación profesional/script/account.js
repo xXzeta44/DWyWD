@@ -1,4 +1,4 @@
-const { readList, saveList, makeUser, passwordHash } = window.AulaNexo;
+const app = window.AulaNexo;
 const status = document.querySelector("#account-status");
 const signinPanel = document.querySelector("#signin-panel");
 const signupPanel = document.querySelector("#signup-panel");
@@ -12,9 +12,11 @@ if (!signinPanel || !signupPanel || !signedInPanel || !signupLink || !signinLink
 }
 
 function updateAccountView() {
-    const user = window.AulaNexo.currentUser();
+    const user = app.currentUser();
     const signedIn = Boolean(user);
     const welcomeMessage = document.querySelector("#welcome-message");
+    const managementLink = document.querySelector("#management-link");
+    const memberNote = document.querySelector("#member-account-note");
 
     signinPanel.classList.toggle("hidden", signedIn || signupMode);
     signinPanel.hidden = signedIn || signupMode;
@@ -29,26 +31,26 @@ function updateAccountView() {
     if (welcomeMessage) {
         welcomeMessage.textContent = signedIn ? `Sesión iniciada como ${user.name}.` : "";
     }
+    if (managementLink) {
+        managementLink.hidden = !signedIn || user.role !== "admin";
+        managementLink.classList.toggle("hidden", managementLink.hidden);
+    }
+    if (memberNote) {
+        memberNote.hidden = !signedIn || user.role === "admin";
+        memberNote.classList.toggle("hidden", memberNote.hidden);
+    }
 }
 
-document.querySelector("#signup-panel").addEventListener("submit", async (event) => { 
+document.querySelector("#signup-panel").addEventListener("submit", async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
-    const users = readList("users");
     const email = String(data.get("email")).trim().toLowerCase();
-    if (users.some((user) => user.email === email)) {
-        status.textContent = "Ya existe una cuenta con ese correo.";
-        return;
-    }
 
     try {
-        const user = await makeUser(String(data.get("name")), email, String(data.get("password")));
-        users.push(user);
-        saveList("users", users);
-        sessionStorage.setItem(window.AulaNexo.keys.currentUser, user.id);
+        const user = await app.register(String(data.get("name")), email, String(data.get("password")));
         form.reset();
-        status.textContent = `Cuenta creada. ¡Bienvenido/a, ${user.name}!`;
+        status.textContent = `Cuenta creada. ¡Bienvenido/a, ${user.name}! Esta cuenta no tiene permisos de gestión.`;
         updateAccountView();
     } catch (error) {
         status.textContent = error.message;
@@ -60,18 +62,9 @@ document.querySelector("#signin-panel").addEventListener("submit", async (event)
     const form = event.currentTarget;
     const data = new FormData(form);
     const email = String(data.get("email")).trim().toLowerCase();
-    const user = readList("users").find((item) => item.email === email);
-    if (!user) {
-        status.textContent = "No se encontró una cuenta con ese correo.";
-        return;
-    }
 
     try {
-        if (await passwordHash(String(data.get("password")), user.salt) !== user.passwordHash) {
-            status.textContent = "La contraseña no coincide.";
-            return;
-        }
-        sessionStorage.setItem(window.AulaNexo.keys.currentUser, user.id);
+        const user = await app.login(email, String(data.get("password")));
         form.reset();
         status.textContent = `Sesión iniciada. ¡Hola, ${user.name}!`;
         updateAccountView();
@@ -80,10 +73,16 @@ document.querySelector("#signin-panel").addEventListener("submit", async (event)
     }
 });
 
-document.querySelector("#logout-button").addEventListener("click", () => {
-    sessionStorage.removeItem(window.AulaNexo.keys.currentUser);
-    window.location.replace("cuenta.html");
+document.querySelector("#logout-button").addEventListener("click", async () => {
+    try {
+        await app.logout();
+        window.location.replace("cuenta.html");
+    } catch (error) {
+        status.textContent = `No se pudo cerrar la sesión: ${error.message}`;
+    }
 });
 
 document.querySelector("#current-year").textContent = String(new Date().getFullYear());
-updateAccountView();
+app.ready.then(updateAccountView).catch((error) => {
+    status.textContent = `No se pudo conectar con el servidor local: ${error.message}`;
+});

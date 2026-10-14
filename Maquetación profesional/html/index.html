@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Conoce nuestro taller, proyectos, actividades y recursos para estudiantes.">
-    <title>IpidProm | Inicio</title>
+    <title>Inicio - IpidProm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="../css/aulanexo.css">
     <script src="../script/common.js"></script>
-    <script>
-        if (!window.AulaNexo.currentUser()) {
-            window.location.replace("cuenta.html");
-        }
-    </script>
 </head>
 
 <body class="portal-page">
@@ -92,7 +87,7 @@
                     <p>Una muestra de experiencias académicas y proyectos de taller.</p>
                 </div>
                 <div class="project-grid" id="project-grid" aria-live="polite"></div>
-                <dialog class="image-preview-dialog" id="   " aria-label="Vista de publicación de galería">
+                <dialog class="image-preview-dialog" id="image-preview-dialog" aria-label="Vista de publicación de galería">
                     <button class="image-preview-close" type="button" aria-label="Cerrar imagen ampliada">×</button>
                     <img id="image-preview" alt="">
                     <video id="video-preview" controls playsinline preload="metadata" hidden></video>

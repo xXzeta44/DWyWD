@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Inicia sesión en la comunidad de estudiantes IpidProm o crea una cuenta.">
-    <title>Mi cuenta | IpidProm</title>
+    <title>Iniciar Sesion - IpidProm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -48,11 +48,12 @@
                 <div id="signed-in-panel" class="signed-in-panel hidden" hidden>
                     <p class="eyebrow">Acceso confirmado</p><h2>¡Bienvenido/a!</h2><p id="welcome-message"></p>
                     <a class="button button-secondary button-wide" href="index.html">Ir a la página principal <span aria-hidden="true">↗</span></a>
-                    <a class="button button-primary button-wide" href="gestion.html">Ir al espacio de estudiantes <span aria-hidden="true">↗</span></a>
+                    <a id="management-link" class="button button-primary button-wide" href="gestion.html">Ir al espacio de gestión <span aria-hidden="true">↗</span></a>
+                    <p id="member-account-note" class="account-disclaimer hidden" hidden>Tu cuenta puede consultar el sitio, pero no tiene permisos para administrar contenido.</p>
                     <button id="logout-button" class="button button-secondary button-wide" type="button">Cerrar sesión</button>
                 </div>
                 <p class="form-status" id="account-status" role="status" aria-live="polite"></p>
-                <p class="account-disclaimer">Prototipo escolar: la cuenta se guarda solo en este navegador y no reemplaza un sistema seguro de producción.</p>
+                <p class="account-disclaimer">Las cuentas y los datos se guardan en el servidor local. El registro público no concede permisos de gestión.</p>
             </div>
         </section>
     </main>
