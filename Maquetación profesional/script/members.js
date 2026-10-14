@@ -24,7 +24,6 @@ if (!currentUser) {
     });
 
     const galleryForm = document.querySelector("#gallery-form");
-    const galleryImage = document.querySelector("#gallery-image");
     galleryForm.addEventListener("submit", handleGallerySubmit);
     document.querySelector("#gallery-cancel").addEventListener("click", resetGalleryForm);
     document.querySelector("#managed-gallery-list").addEventListener("click", handleGalleryAction);
@@ -161,6 +160,7 @@ async function renderGallery() {
             <img class="managed-gallery-image" src="${safeText(image)}" alt="${safeText(item.title)}" loading="lazy">
             <h3>${safeText(item.title)}</h3>
             <p>${safeText(item.description)}</p>
+            ${item.videoAssetId ? "<p>Video adjunto</p>" : ""}
             <div class="management-actions">
                 <button type="button" data-gallery-action="edit" data-id="${safeText(item.id)}">Editar</button>
                 <button type="button" data-gallery-action="delete" data-id="${safeText(item.id)}">Eliminar</button>
@@ -208,6 +208,7 @@ async function handleGallerySubmit(event) {
     const index = list.findIndex((item) => item.id === id);
     const existing = index >= 0 ? list[index] : null;
     const file = document.querySelector("#gallery-image").files[0];
+    const videoFile = document.querySelector("#gallery-video").files[0];
     if (!existing && !file) {
         showStatus("#gallery-status", "Selecciona una fotografía para publicar.");
         return;
@@ -216,34 +217,58 @@ async function handleGallerySubmit(event) {
         showStatus("#gallery-status", "Selecciona un archivo de imagen válido.");
         return;
     }
+    if (videoFile && !videoFile.type.startsWith("video/")) {
+        showStatus("#gallery-status", "Selecciona un archivo de video válido.");
+        return;
+    }
 
     let newAssetId;
+    let newVideoAssetId;
     let listSaved = false;
     try {
         if (file) newAssetId = await app.saveAsset(file);
+        if (videoFile) newVideoAssetId = await app.saveAsset(videoFile);
         const item = {
             id: existing?.id ?? createId(),
             title: String(data.get("title")).trim(),
             description: String(data.get("description")).trim(),
             image: file ? "" : existing.image,
-            ...(file ? { assetId: newAssetId } : existing?.assetId ? { assetId: existing.assetId } : {})
+            ...(file ? { assetId: newAssetId } : existing?.assetId ? { assetId: existing.assetId } : {}),
+            ...(videoFile ? { videoAssetId: newVideoAssetId } : existing?.videoAssetId ? { videoAssetId: existing.videoAssetId } : {})
         };
         if (existing) list[index] = item;
         else list.push(item);
         saveList("gallery", list);
         listSaved = true;
-        if (file && existing?.assetId) await app.deleteAsset(existing.assetId);
+        const oldAssetIds = [
+            file ? existing?.assetId : null,
+            videoFile ? existing?.videoAssetId : null
+        ].filter(Boolean);
+        const cleanupErrors = [];
+        for (const assetId of oldAssetIds) {
+            try {
+                await app.deleteAsset(assetId);
+            } catch (error) {
+                cleanupErrors.push(error.message);
+            }
+        }
+        if (cleanupErrors.length) throw new Error(cleanupErrors.join(" "));
         resetGalleryForm();
         showStatus("#gallery-status", existing ? "Publicación actualizada." : "Publicación agregada a la galería.");
         await renderGallery();
     } catch (error) {
         let detail = error.message;
-        if (newAssetId && !listSaved) {
-            try {
-                await app.deleteAsset(newAssetId);
-            } catch (cleanupError) {
-                detail += ` Además, no se pudo limpiar el archivo temporal: ${cleanupError.message}`;
+        if (!listSaved) {
+            const temporaryAssetIds = [newAssetId, newVideoAssetId].filter(Boolean);
+            const cleanupErrors = [];
+            for (const assetId of temporaryAssetIds) {
+                try {
+                    await app.deleteAsset(assetId);
+                } catch (cleanupError) {
+                    cleanupErrors.push(cleanupError.message);
+                }
             }
+            if (cleanupErrors.length) detail += ` Además, no se pudo limpiar el archivo temporal: ${cleanupErrors.join(" ")}`;
         }
         showStatus("#gallery-status", listSaved
             ? `Publicación guardada, pero no se pudo limpiar el archivo anterior: ${detail}`
@@ -262,12 +287,18 @@ async function handleGalleryAction(event) {
         if (!confirm(`¿Eliminar "${list[index].title}" de la galería?`)) return;
         const [deleted] = list.splice(index, 1);
         saveList("gallery", list);
-        try {
-            if (deleted.assetId) await app.deleteAsset(deleted.assetId);
-            await renderGallery();
-        } catch (error) {
-            showStatus("#gallery-status", `La publicación se eliminó, pero no se pudo limpiar su archivo: ${error.message}`);
+        const cleanupErrors = [];
+        for (const assetId of [deleted.assetId, deleted.videoAssetId].filter(Boolean)) {
+            try {
+                await app.deleteAsset(assetId);
+            } catch (error) {
+                cleanupErrors.push(error.message);
+            }
         }
+        await renderGallery();
+        showStatus("#gallery-status", cleanupErrors.length
+            ? `La publicación se eliminó, pero no se pudo limpiar uno de sus archivos: ${cleanupErrors.join(" ")}`
+            : "Publicación eliminada de la galería.");
         return;
     }
 
@@ -278,7 +309,7 @@ async function handleGalleryAction(event) {
     document.querySelector("#gallery-image").required = false;
     document.querySelector("#gallery-submit").textContent = "Guardar cambios";
     document.querySelector("#gallery-cancel").classList.remove("hidden");
-    showStatus("#gallery-status", "Selecciona otra fotografía solo si también quieres reemplazarla.");
+    showStatus("#gallery-status", "Puedes reemplazar la fotografía o adjuntar un video; si dejas los archivos vacíos, se conservarán los actuales.");
     document.querySelector("#gallery-title").focus();
 }
 

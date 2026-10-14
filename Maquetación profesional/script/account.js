@@ -1,49 +1,35 @@
 const { readList, saveList, makeUser, passwordHash } = window.AulaNexo;
 const status = document.querySelector("#account-status");
-const signinTab = document.querySelector("#signin-tab");
-const signupTab = document.querySelector("#signup-tab");
 const signinPanel = document.querySelector("#signin-panel");
 const signupPanel = document.querySelector("#signup-panel");
 const signedInPanel = document.querySelector("#signed-in-panel");
+const signupLink = document.querySelector("#signup-link");
+const signinLink = document.querySelector("#signin-link");
+const signupMode = new URLSearchParams(window.location.search).has("registro");
 
-if (!signinTab || !signupTab || !signinPanel || !signupPanel || !signedInPanel) {
+if (!signinPanel || !signupPanel || !signedInPanel || !signupLink || !signinLink) {
     throw new Error("La página de cuenta no tiene los elementos esperados.");
-}
-
-function showForm(mode) {
-    const signingUp = mode === "signup";
-    signinTab.classList.toggle("is-active", !signingUp);
-    signupTab.classList.toggle("is-active", signingUp);
-    signinTab.setAttribute("aria-selected", String(!signingUp));
-    signupTab.setAttribute("aria-selected", String(signingUp));
-    signinPanel.classList.toggle("hidden", signingUp);
-    signinPanel.hidden = signingUp;
-    signupPanel.classList.toggle("hidden", !signingUp);
-    signupPanel.hidden = !signingUp;
 }
 
 function updateAccountView() {
     const user = window.AulaNexo.currentUser();
     const signedIn = Boolean(user);
-    const accountTabs = document.querySelector("#account-tabs");
     const welcomeMessage = document.querySelector("#welcome-message");
 
-    if (accountTabs) {
-        accountTabs.classList.toggle("hidden", signedIn);
-    }
-    signinPanel.classList.toggle("hidden", signedIn);
-    signinPanel.hidden = signedIn;
-    signupPanel.classList.add("hidden");
-    signupPanel.hidden = true;
+    signinPanel.classList.toggle("hidden", signedIn || signupMode);
+    signinPanel.hidden = signedIn || signupMode;
+    signupPanel.classList.toggle("hidden", signedIn || !signupMode);
+    signupPanel.hidden = signedIn || !signupMode;
+    signupLink.classList.toggle("hidden", signedIn || signupMode);
+    signupLink.hidden = signedIn || signupMode;
+    signinLink.classList.toggle("hidden", signedIn || !signupMode);
+    signinLink.hidden = signedIn || !signupMode;
     signedInPanel.classList.toggle("hidden", !signedIn);
     signedInPanel.hidden = !signedIn;
     if (welcomeMessage) {
         welcomeMessage.textContent = signedIn ? `Sesión iniciada como ${user.name}.` : "";
     }
 }
-
-signinTab.addEventListener("click", () => showForm("signin"));
-signupTab.addEventListener("click", () => showForm("signup"));
 
 document.querySelector("#signup-panel").addEventListener("submit", async (event) => { 
     event.preventDefault();
@@ -96,9 +82,7 @@ document.querySelector("#signin-panel").addEventListener("submit", async (event)
 
 document.querySelector("#logout-button").addEventListener("click", () => {
     sessionStorage.removeItem(window.AulaNexo.keys.currentUser);
-    status.textContent = "Se cerró la sesión.";
-    updateAccountView();
-    showForm("signin");
+    window.location.replace("cuenta.html");
 });
 
 document.querySelector("#current-year").textContent = String(new Date().getFullYear());

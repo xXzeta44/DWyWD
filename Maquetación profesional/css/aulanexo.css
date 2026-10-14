@@ -471,7 +471,20 @@ h3 {
     grid-row: span 2;
 }
 
+.project-image-button {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    overflow: hidden;
+    border: 0;
+    background: transparent;
+    cursor: zoom-in;
+}
+
 .project-card img {
+    display: block;
     width: 100%;
     height: 100%;
     min-height: inherit;
@@ -487,6 +500,7 @@ h3 {
     position: absolute;
     inset: 35% 0 0;
     background: linear-gradient(transparent, rgba(14, 22, 35, .8));
+    pointer-events: none;
     content: "";
 }
 
@@ -497,6 +511,7 @@ h3 {
     bottom: 20px;
     left: 22px;
     color: #fff;
+    pointer-events: none;
 }
 
 .project-caption > span, .project-caption p {
@@ -524,6 +539,66 @@ h3 {
     margin: 16px 0 0;
     color: var(--muted);
     font-size: .78rem;
+}
+
+.image-preview-dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin: 0;
+    transform: translate(-50%, -50%);
+    width: min(1000px, calc(100% - 32px));
+    max-width: none;
+    max-height: calc(100vh - 32px);
+    padding: 48px 16px 16px;
+    overflow: visible;
+    border: 0;
+    border-radius: var(--radius);
+    background: #fff;
+}
+
+.image-preview-dialog::backdrop {
+    background: rgba(10, 14, 22, .84);
+}
+
+.image-preview-dialog img {
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 96px);
+    object-fit: contain;
+}
+
+.image-preview-dialog img[hidden],
+.image-preview-dialog video[hidden],
+.image-preview-error[hidden] {
+    display: none;
+}
+
+.image-preview-dialog video {
+    display: block;
+    width: 100%;
+    max-height: calc(100vh - 96px);
+    background: #151b27;
+}
+
+.image-preview-error {
+    margin: 12px 0 0;
+    color: #a12626;
+}
+
+.image-preview-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    width: 34px;
+    height: 34px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    background: #fff;
+    color: var(--ink);
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
 }
 
 .news-section {
@@ -1063,35 +1138,6 @@ h3 {
     box-shadow: 0 24px 70px rgba(48, 58, 45, .12);
 }
 
-.account-tabs {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-    margin-bottom: 32px;
-    padding: 6px;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: #f5f6f1;
-}
-
-.account-tabs button {
-    min-height: 46px;
-    padding: 10px 12px;
-    border: 0;
-    border-radius: 10px;
-    color: var(--muted);
-    background: transparent;
-    font-size: .85rem;
-    font-weight: 700;
-    transition: color .2s, background .2s, box-shadow .2s;
-}
-
-.account-tabs button.is-active {
-    color: var(--ink);
-    background: #fff;
-    box-shadow: 0 3px 10px rgba(48, 58, 45, .1);
-}
-
 .account-form > div:first-child {
     margin-bottom: 21px;
 }
@@ -1147,9 +1193,9 @@ h3 {
     box-shadow: 0 8px 18px rgba(61, 92, 71, .15);
 }
 
-.account-tabs button:focus-visible {
-    outline: 3px solid rgba(82, 116, 92, .45);
-    outline-offset: 2px;
+.account-switch {
+    justify-content: center;
+    margin-top: 12px;
 }
 
 .signed-in-panel h2 {

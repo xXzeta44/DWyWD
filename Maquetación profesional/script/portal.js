@@ -271,6 +271,77 @@ renderMap();
 async function renderGallery() {
     const target = document.querySelector("#project-grid");
     if (!target) return;
+    const previewDialog = document.querySelector("#image-preview-dialog");
+    const previewImage = document.querySelector("#image-preview");
+    const previewVideo = document.querySelector("#video-preview");
+    const previewError = document.querySelector("#image-preview-error");
+    const closePreview = previewDialog?.querySelector(".image-preview-close");
+    if (previewDialog instanceof HTMLDialogElement && previewImage instanceof HTMLImageElement && previewVideo instanceof HTMLVideoElement && previewError instanceof HTMLElement && closePreview) {
+        let previewVideoUrl = null;
+        target.addEventListener("click", async (event) => {
+            const button = event.target.closest(".project-image-button");
+            if (!button) return;
+            const card = button.closest(".project-card");
+            const image = button.querySelector("img");
+            if (!image) return;
+            const galleryItem = readList("gallery").find((item) => item.id === card?.dataset.galleryId);
+            if (!galleryItem) return;
+            previewVideo.pause();
+            previewVideo.removeAttribute("src");
+            previewVideo.hidden = true;
+            previewImage.hidden = false;
+            previewError.hidden = true;
+            previewError.textContent = "";
+            if (previewVideoUrl) {
+                URL.revokeObjectURL(previewVideoUrl);
+                previewVideoUrl = null;
+            }
+            if (galleryItem.videoAssetId) {
+                try {
+                    const blob = await requireAsset(galleryItem.videoAssetId);
+                    previewVideoUrl = URL.createObjectURL(blob);
+                    previewVideo.src = previewVideoUrl;
+                    previewVideo.hidden = false;
+                    previewImage.hidden = true;
+                    previewDialog.showModal();
+                    previewVideo.play().catch(() => {
+                        if (previewDialog.open) {
+                            previewError.textContent = "Pulsa reproducir para iniciar el video.";
+                            previewError.hidden = false;
+                        }
+                    });
+                } catch (error) {
+                    console.error("No se pudo abrir el video de la galería.", error);
+                    previewImage.hidden = true;
+                    previewVideo.hidden = true;
+                    previewError.textContent = `No se pudo cargar el video: ${error.message}`;
+                    previewDialog.showModal();
+                }
+                return;
+            }
+            previewImage.src = image.src;
+            previewImage.alt = image.alt;
+            previewDialog.showModal();
+        });
+        const closePreviewDialog = () => {
+            previewVideo.pause();
+            previewVideo.removeAttribute("src");
+            previewVideo.load();
+            previewVideo.hidden = true;
+            previewImage.hidden = false;
+            previewError.hidden = true;
+            previewError.textContent = "";
+            if (previewVideoUrl) {
+                URL.revokeObjectURL(previewVideoUrl);
+                previewVideoUrl = null;
+            }
+        };
+        closePreview.addEventListener("click", () => previewDialog.close());
+        previewDialog.addEventListener("close", closePreviewDialog);
+        previewDialog.addEventListener("click", (event) => {
+            if (event.target === previewDialog) previewDialog.close();
+        });
+    }
     galleryObjectUrls.forEach((url) => URL.revokeObjectURL(url));
     galleryObjectUrls = [];
     const items = readList("gallery");
@@ -284,8 +355,10 @@ async function renderGallery() {
             imageUrl = URL.createObjectURL(await requireAsset(item.assetId));
             galleryObjectUrls.push(imageUrl);
         }
-        return `<article class="project-card${index === 0 ? " project-feature" : ""}">
-            <img src="${safeText(imageUrl)}" alt="${safeText(item.title)}" loading="lazy">
+        return `<article class="project-card${index === 0 ? " project-feature" : ""}" data-gallery-id="${safeText(item.id)}">
+            <button class="project-image-button" type="button" aria-label="Ampliar fotografía: ${safeText(item.title)}">
+                <img src="${safeText(imageUrl)}" alt="${safeText(item.title)}" loading="lazy">
+            </button>
             <div class="project-caption"><span>Galería del grupo</span><h3>${safeText(item.title)}</h3><p>${safeText(item.description)}</p></div>
         </article>`;
     }));

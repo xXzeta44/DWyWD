@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Inicia sesión o crea tu cuenta de AulaNexo.">
+    <meta name="description" content="Inicia sesión en la comunidad de estudiantes IpidProm o crea una cuenta.">
     <title>Mi cuenta | IpidProm</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -13,11 +13,10 @@
 <body class="account-page">
     <header class="site-header">
         <div class="container header-inner">
-            <a class="brand" href="index.html">
+            <a class="brand" href="cuenta.html">
                 <span class="brand-mark" aria-hidden="true"><img src="/Maquetación profesional/img/logosalesianos.png" alt=""></span>
                 <span><strong>IpidProm</strong><small>Instituto Politecnico Industrial Don Bosco</small></span>
             </a>
-            <a class="text-link" href="index.html">← Volver al inicio</a>
         </div>
     </header>
     <main class="account-main">
@@ -29,25 +28,24 @@
                 <div class="account-quote"><span aria-hidden="true">“</span><p>El conocimiento crece cuando lo ponemos en práctica y lo compartimos.</p></div>
             </div>
             <div class="account-card">
-                <div id="account-tabs" class="account-tabs" role="tablist" aria-label="Acceso a la cuenta">
-                    <button id="signin-tab" class="is-active" type="button" role="tab" aria-selected="true" aria-controls="signin-panel">Iniciar sesión</button>
-                    <button id="signup-tab" type="button" role="tab" aria-selected="false" aria-controls="signup-panel">Crear cuenta</button>
-                </div>
-                <form id="signin-panel" class="account-form" role="tabpanel" aria-labelledby="signin-tab">
+                <form id="signin-panel" class="account-form">
                     <div><p class="eyebrow">Qué bueno verte</p><h2>Inicia sesión</h2><p class="form-intro">Usa el correo con el que te registraste.</p></div>
                     <label for="signin-email">Correo electrónico</label><input id="signin-email" name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" required>
                     <label for="signin-password">Contraseña</label><input id="signin-password" name="password" type="password" autocomplete="current-password" placeholder="Tu contraseña" required>
                     <button class="button button-primary button-wide" type="submit">Entrar al espacio <span aria-hidden="true">↗</span></button>
+                    <a id="signup-link" class="button button-secondary button-wide account-switch" href="cuenta.html?registro">Registrarme</a>
                 </form>
-                <form id="signup-panel" class="account-form hidden" role="tabpanel" aria-labelledby="signup-tab" hidden>
+                <form id="signup-panel" class="account-form hidden" hidden>
                     <div><p class="eyebrow">Una comunidad para aprender</p><h2>Crea tu cuenta</h2><p class="form-intro">Regístrate para acceder al espacio de estudiantes.</p></div>
                     <label for="signup-name">Nombre de usuario</label><input id="signup-name" name="name" type="text" autocomplete="username" placeholder="Cómo te llamamos" required>
                     <label for="signup-email">Correo electrónico</label><input id="signup-email" name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" required>
                     <label for="signup-password">Contraseña</label><input id="signup-password" name="password" type="password" autocomplete="new-password" minlength="8" placeholder="Al menos 8 caracteres" required>
                     <button class="button button-primary button-wide" type="submit">Crear mi cuenta <span aria-hidden="true">↗</span></button>
+                    <a id="signin-link" class="text-link account-switch" href="cuenta.html">← Ya tengo una cuenta</a>
                 </form>
                 <div id="signed-in-panel" class="signed-in-panel hidden" hidden>
                     <p class="eyebrow">Acceso confirmado</p><h2>¡Bienvenido/a!</h2><p id="welcome-message"></p>
+                    <a class="button button-secondary button-wide" href="index.html">Ir a la página principal <span aria-hidden="true">↗</span></a>
                     <a class="button button-primary button-wide" href="gestion.html">Ir al espacio de estudiantes <span aria-hidden="true">↗</span></a>
                     <button id="logout-button" class="button button-secondary button-wide" type="button">Cerrar sesión</button>
                 </div>
@@ -56,7 +54,7 @@
             </div>
         </section>
     </main>
-    <footer class="site-footer"><div class="container footer-inner"><span>© <span id="current-year"></span> AulaNexo</span><a class="text-link" href="index.html#contacto">¿Necesitas ayuda? Contáctanos</a></div></footer>
+    <footer class="site-footer"><div class="container footer-inner"><span>© <span id="current-year"></span> AulaNexo</span></div></footer>
     <script src="../script/common.js"></script>
     <script src="../script/account.js"></script>
 </body>

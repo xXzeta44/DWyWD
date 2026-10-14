@@ -35,10 +35,10 @@ PD: Si te pasaron la carpeta, escribe en la terminal "pnpm install" para instala
 
 # Paginas del prototipo AulaNexo
 
-- `html/index.html`: portada, proyectos, novedades, calendario, videos, contacto y ubicacion.
-- `html/cuenta.html`: inicio de sesion y registro en pantallas separadas.
+- `html/index.html`: portada para usuarios con sesión iniciada; quien no tenga sesión será enviado a `cuenta.html`.
+- `html/cuenta.html`: muestra inicio de sesión y, desde el botón «Registrarme», el formulario de creación de cuenta.
 - `html/gestion.html`: recursos y administracion para integrantes con sesion iniciada.
 - `css/aulanexo.css`: estilos compartidos.
 - `script/`: scripts compartidos y comportamiento de cada pagina.
 
-Abre la carpeta `Maquetación profesional` desde un servidor local (por ejemplo, la extension Live Server de VS Code) y visita `html/index.html` para probar las paginas y las cuentas entre ellas. Desde gestión se administran las publicaciones de la galería, los videos de “En primera persona” y el registro de integrantes con sus fotos; marca hasta tres integrantes para mostrarlos en la presentación y pega el enlace compartido de Google Maps de cada ubicación. Los mensajes del formulario de contacto también quedan disponibles para consulta desde gestión. Es solo una maqueta: los datos y archivos quedan en el navegador (localStorage e IndexedDB) y no existe seguridad real ni almacenamiento compartido entre dispositivos.
+Abre la carpeta `Maquetación profesional` desde un servidor local (por ejemplo, la extension Live Server de VS Code) y visita `html/index.html`; si no hay sesión iniciada, se abrirá la pantalla de cuenta. Crea una cuenta o inicia sesión para entrar a la portada. Desde gestión se administran las publicaciones de la galería, los videos de “En primera persona” y el registro de integrantes con sus fotos; marca hasta tres integrantes para mostrarlos en la presentación y pega el enlace compartido de Google Maps de cada ubicación. Los mensajes del formulario de contacto también quedan disponibles para consulta desde gestión. Es solo una maqueta: los datos y archivos quedan en el navegador (localStorage e IndexedDB) y no existe seguridad real ni almacenamiento compartido entre dispositivos.
