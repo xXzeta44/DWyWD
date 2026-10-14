@@ -267,11 +267,12 @@ h3 {
 }
 
 .hero-copy {
-    max-width: 560px;
+    max-width: 460px;
 }
 
 .hero-copy h1 {
     margin-bottom: 22px;
+
 }
 
 .hero-intro {
@@ -1797,6 +1798,1260 @@ h3 {
 :focus-visible {
     outline: 3px solid rgba(82, 116, 92, .45);
     outline-offset: 3px;
+}
+
+.account-page {
+    --account-green: #315b45;
+    --account-green-deep: #234333;
+    --account-beige: #e9e2d2;
+    --account-beige-light: #f5f1e7;
+    --account-black: #171a17;
+    --account-muted: #5f655e;
+    min-height: 100vh;
+    color: var(--account-black);
+    background: var(--account-beige);
+}
+
+.account-page .site-header {
+    position: relative;
+    border-bottom: 2px solid var(--account-black);
+    background: var(--account-beige);
+    backdrop-filter: none;
+}
+
+.account-header-inner {
+    min-height: 82px;
+}
+
+.account-page .brand {
+    gap: 14px;
+}
+
+.account-page .brand-mark {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--account-black);
+    border-radius: 0;
+    color: var(--account-beige);
+    background: var(--account-green);
+    font-family: "Manrope", sans-serif;
+    font-size: .95rem;
+    letter-spacing: -.08em;
+}
+
+.account-page .brand strong {
+    color: var(--account-black);
+    font-size: 1.08rem;
+    letter-spacing: -.04em;
+}
+
+.account-page .brand small {
+    display: block;
+    margin-top: 1px;
+    color: var(--account-muted);
+    font-size: .67rem;
+    letter-spacing: .04em;
+}
+
+.account-header-note {
+    color: var(--account-black);
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.account-header-note b {
+    padding-inline: 8px;
+    color: var(--account-green);
+    letter-spacing: .04em;
+}
+
+.account-page .account-main {
+    display: grid;
+    flex: 1;
+    align-items: center;
+    padding-block: clamp(42px, 7vh, 84px);
+}
+
+.account-page .account-layout {
+    grid-template-columns: 1.02fr .98fr;
+    align-items: stretch;
+    gap: 0;
+    min-height: 610px;
+    border: 2px solid var(--account-black);
+    background: var(--account-green);
+    box-shadow: 12px 12px 0 var(--account-black);
+}
+
+.account-page .account-aside {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: clamp(38px, 5.4vw, 76px);
+    overflow: hidden;
+    border-right: 2px solid var(--account-black);
+    color: var(--account-beige);
+    background-color: var(--account-green);
+    background-image: linear-gradient(rgba(233, 226, 210, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(233, 226, 210, .055) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.account-page .account-aside::before,
+.account-page .account-aside::after {
+    position: absolute;
+    z-index: 0;
+    content: "";
+    pointer-events: none;
+}
+
+.account-page .account-aside::before {
+    top: 0;
+    right: 0;
+    width: 22%;
+    height: 15px;
+    background: var(--account-beige);
+}
+
+.account-page .account-aside::after {
+    top: 13%;
+    right: 10%;
+    width: 84px;
+    height: 84px;
+    border: 2px solid var(--account-beige);
+    transform: rotate(45deg);
+}
+
+.account-page .account-aside > * {
+    position: relative;
+    z-index: 1;
+}
+
+.account-page .account-aside .eyebrow {
+    margin-bottom: 26px;
+    color: var(--account-beige);
+    font-size: .68rem;
+    letter-spacing: .16em;
+}
+
+.account-page .account-aside .eyebrow-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 0;
+    background: var(--account-beige);
+}
+
+.account-page .account-aside h1 {
+    max-width: 520px;
+    margin-bottom: 23px;
+    color: var(--account-beige-light);
+    font-size: clamp(3rem, 5.2vw, 5.1rem);
+    font-weight: 800;
+    letter-spacing: -.075em;
+    line-height: .98;
+    text-transform: uppercase;
+}
+
+.account-page .account-aside h1 span {
+    color: var(--account-beige);
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 7px;
+}
+
+.account-page .account-aside > p:not(.eyebrow) {
+    max-width: 390px;
+    margin-bottom: 0;
+    color: rgba(245, 241, 231, .82);
+    font-size: .94rem;
+    line-height: 1.75;
+}
+
+.account-page .account-quote {
+    max-width: 390px;
+    gap: 13px;
+    margin-top: 39px;
+    padding: 16px 0 0;
+    border-top: 1px solid rgba(233, 226, 210, .45);
+}
+
+.account-page .account-quote > span {
+    color: var(--account-beige);
+    font-family: "Manrope", sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.account-page .account-quote p {
+    margin: 5px 0 0;
+    color: var(--account-beige);
+    font-size: .82rem;
+    line-height: 1.55;
+}
+
+.account-aside-stamp {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 32px;
+    padding-top: 10px;
+    border-top: 2px solid var(--account-beige);
+    color: var(--account-beige);
+    font-size: .58rem;
+    font-weight: 800;
+    letter-spacing: .13em;
+    line-height: 1.25;
+    text-transform: uppercase;
+}
+
+.account-aside-stamp strong {
+    display: grid;
+    width: 32px;
+    height: 32px;
+    place-items: center;
+    border: 1px solid var(--account-beige);
+    font-size: .7rem;
+    letter-spacing: -.08em;
+}
+
+.account-page .account-card {
+    align-self: stretch;
+    padding: clamp(32px, 5vw, 68px);
+    border: 0;
+    border-radius: 0;
+    background: var(--account-beige-light);
+    box-shadow: none;
+}
+
+.account-page .account-form > div:first-child {
+    margin-bottom: 29px;
+    padding-bottom: 22px;
+    border-bottom: 2px solid var(--account-black);
+}
+
+.account-page .account-form .eyebrow,
+.account-page .signed-in-panel .eyebrow {
+    margin-bottom: 8px;
+    color: var(--account-green);
+    font-size: .67rem;
+    letter-spacing: .16em;
+}
+
+.account-page .account-form h2,
+.account-page .signed-in-panel h2 {
+    margin: 0;
+    color: var(--account-black);
+    font-size: clamp(2rem, 3.3vw, 2.7rem);
+    font-weight: 800;
+    letter-spacing: -.07em;
+    line-height: 1.05;
+    text-transform: uppercase;
+}
+
+.account-page .form-intro {
+    margin-top: 10px;
+    color: var(--account-muted);
+    font-size: .85rem;
+}
+
+.account-page .account-form label {
+    margin: 19px 0 6px;
+    color: var(--account-black);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .11em;
+    text-transform: uppercase;
+}
+
+.account-page .account-form input {
+    min-height: 52px;
+    padding: 12px 14px;
+    border: 1px solid var(--account-black);
+    border-radius: 0;
+    color: var(--account-black);
+    background: var(--account-beige);
+    box-shadow: 3px 3px 0 rgba(23, 26, 23, .12);
+}
+
+.account-page .account-form input::placeholder {
+    color: #74786f;
+    opacity: 1;
+}
+
+.account-page .account-form input:focus {
+    border-color: var(--account-green);
+    box-shadow: 4px 4px 0 var(--account-green);
+    outline: none;
+}
+
+.account-page .account-form input:focus-visible {
+    outline: 2px solid var(--account-green);
+    outline-offset: 4px;
+}
+
+.account-page .button {
+    min-height: 52px;
+    border: 2px solid var(--account-black);
+    border-radius: 0;
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.account-page .account-form .button {
+    margin-top: 25px;
+    box-shadow: 4px 4px 0 var(--account-black);
+}
+
+.account-page .button-primary {
+    color: var(--account-beige-light);
+    background: var(--account-green);
+}
+
+.account-page .button-primary:hover {
+    background: var(--account-green-deep);
+    box-shadow: 6px 6px 0 var(--account-black);
+}
+
+.account-page .button-secondary {
+    color: var(--account-black);
+    background: var(--account-beige);
+}
+
+.account-page .button-secondary:hover {
+    border-color: var(--account-black);
+    background: #ded5c2;
+}
+
+.account-page .account-switch {
+    margin-top: 15px;
+}
+
+.account-page .text-link {
+    color: var(--account-green);
+}
+
+.account-page .signed-in-panel h2 {
+    margin-bottom: 14px;
+}
+
+.account-page .signed-in-panel > p:not(.eyebrow) {
+    color: var(--account-muted);
+}
+
+.account-page .signed-in-panel .button {
+    margin-top: 13px;
+    box-shadow: 4px 4px 0 var(--account-black);
+}
+
+.account-page .form-status {
+    margin-top: 19px;
+    color: var(--account-green-deep);
+    font-size: .82rem;
+    font-weight: 700;
+}
+
+.account-page .account-disclaimer {
+    margin-top: 25px;
+    padding-top: 14px;
+    border-top: 1px solid #c9c1b1;
+    color: var(--account-muted);
+    font-size: .67rem;
+    line-height: 1.55;
+}
+
+.account-page .site-footer {
+    padding-block: 16px;
+    border-top: 2px solid var(--account-black);
+    color: var(--account-beige);
+    background: var(--account-black);
+}
+
+.account-page .footer-inner > span {
+    color: var(--account-beige);
+    font-size: .67rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.account-page :focus-visible {
+    outline-color: var(--account-green);
+}
+
+@media (max-width: 900px) {
+    .account-page .account-layout {
+        grid-template-columns: .92fr 1.08fr;
+    }
+    .account-page .account-aside {
+        padding: 38px;
+    }
+    .account-page .account-aside h1 {
+        font-size: clamp(2.7rem, 5.4vw, 4rem);
+    }
+    .account-page .account-card {
+        padding: 38px;
+    }
+}
+
+@media (max-width: 720px) {
+    .account-page .account-header-inner {
+        min-height: 72px;
+    }
+    .account-header-note {
+        font-size: .58rem;
+        letter-spacing: .08em;
+    }
+    .account-page .account-main {
+        padding-block: 28px 36px;
+    }
+    .account-page .account-layout {
+        grid-template-columns: 1fr;
+        gap: 0;
+        min-height: 0;
+        box-shadow: 7px 7px 0 var(--account-black);
+    }
+    .account-page .account-aside {
+        min-height: 350px;
+        padding: 38px 32px;
+        border-right: 0;
+        border-bottom: 2px solid var(--account-black);
+    }
+    .account-page .account-aside h1 {
+        max-width: 450px;
+        font-size: clamp(2.75rem, 11vw, 4.4rem);
+    }
+    .account-page .account-aside::after {
+        display: none;
+    }
+    .account-page .account-quote {
+        margin-top: 24px;
+    }
+    .account-aside-stamp {
+        display: none;
+    }
+    .account-page .account-card {
+        padding: 34px 32px;
+    }
+    .account-page .footer-inner {
+        justify-content: space-between;
+    }
+    .account-page .footer-inner > span {
+        display: block;
+    }
+}
+
+@media (max-width: 440px) {
+    .account-page .container {
+        width: calc(100% - 32px);
+    }
+    .account-page .account-header-inner {
+        gap: 8px;
+    }
+    .account-page .brand {
+        gap: 9px;
+    }
+    .account-page .brand-mark {
+        width: 40px;
+        height: 40px;
+    }
+    .account-page .brand small {
+        max-width: 175px;
+        font-size: .55rem;
+    }
+    .account-header-note {
+        max-width: 95px;
+        text-align: right;
+        line-height: 1.5;
+    }
+    .account-page .account-aside {
+        min-height: 320px;
+        padding: 30px 24px;
+    }
+    .account-page .account-aside .eyebrow {
+        margin-bottom: 18px;
+    }
+    .account-page .account-aside h1 {
+        font-size: clamp(2.5rem, 12vw, 3.4rem);
+    }
+    .account-page .account-card {
+        padding: 30px 24px;
+    }
+    .account-page .footer-inner {
+        gap: 8px;
+    }
+    .account-page .footer-inner > span {
+        font-size: .56rem;
+    }
+}
+
+.portal-page,
+.management-page {
+    --ink: #171a17;
+    --muted: #62685f;
+    --blue: #315b45;
+    --blue-dark: #234333;
+    --blue-soft: #e1e7dc;
+    --line: #b9b6a9;
+    --paper: #f5f1e7;
+    --wash: #e9e2d2;
+    --radius: 0;
+    --shadow: 6px 6px 0 #171a17;
+    color: var(--ink);
+    background: var(--wash);
+}
+
+.portal-page .site-header,
+.management-page .site-header {
+    position: sticky;
+    border-bottom: 2px solid var(--ink);
+    background: rgba(233, 226, 210, .96);
+    backdrop-filter: blur(10px);
+}
+
+.portal-page .header-inner,
+.management-page .header-inner {
+    min-height: 76px;
+}
+
+.portal-page .brand,
+.management-page .brand {
+    gap: 13px;
+}
+
+.portal-page .brand-mark,
+.management-page .brand-mark {
+    width: 46px;
+    height: 46px;
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .brand-mark img,
+.management-page .brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.portal-page .brand strong,
+.management-page .brand strong {
+    color: var(--ink);
+    letter-spacing: -.045em;
+}
+
+.portal-page .brand small,
+.management-page .brand small {
+    color: var(--muted);
+    font-size: .64rem;
+    letter-spacing: .04em;
+}
+
+.portal-page .main-nav {
+    gap: clamp(10px, 1.45vw, 20px);
+}
+
+.portal-page .main-nav a {
+    color: var(--ink);
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.portal-page .main-nav a:hover,
+.portal-page .main-nav .nav-account {
+    color: var(--blue);
+}
+
+.portal-page .main-nav .nav-account {
+    padding: 7px 10px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+}
+
+.portal-page h1,
+.portal-page h2,
+.management-page h1,
+.management-page h2 {
+    color: var(--ink);
+    font-weight: 400;
+    letter-spacing: -.065em;
+    text-transform: uppercase;
+}
+
+.portal-page h1 span,
+.portal-page h2 span,
+.management-page h1 span,
+.management-page h2 span {
+    color: var(--blue);
+}
+
+.portal-page .eyebrow,
+.management-page .eyebrow {
+    color: var(--blue);
+    font-size: .68rem;
+    letter-spacing: .15em;
+}
+
+.portal-page .eyebrow-dot,
+.management-page .eyebrow-dot {
+    border-radius: 0;
+    background: var(--blue);
+}
+
+.portal-page .text-link,
+.management-page .text-link {
+    color: var(--blue);
+    font-weight: 800;
+}
+
+.portal-page .text-link:hover,
+.management-page .text-link:hover {
+    color: var(--blue-dark);
+}
+
+.portal-page .button,
+.management-page .button {
+    min-height: 47px;
+    padding: 10px 17px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    font-size: .73rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    box-shadow: 4px 4px 0 var(--ink);
+}
+
+.portal-page .button-primary,
+.management-page .button-primary {
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .button-primary:hover,
+.management-page .button-primary:hover {
+    background: var(--blue-dark);
+    box-shadow: 6px 6px 0 var(--ink);
+}
+
+.portal-page .button-secondary,
+.management-page .button-secondary {
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--wash);
+}
+
+.portal-page .button-secondary:hover,
+.management-page .button-secondary:hover {
+    border-color: var(--ink);
+    background: #ded5c2;
+}
+
+.portal-page .hero {
+    position: relative;
+    padding-block: clamp(70px, 9vw, 120px);
+    border-bottom: 2px solid var(--ink);
+    background-color: var(--blue);
+    background-image: linear-gradient(rgba(245, 241, 231, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 241, 231, .07) 1px, transparent 1px);
+    background-size: 32px 32px;
+}
+
+.portal-page .hero-copy {
+    position: relative;
+    z-index: 1;
+    padding: clamp(24px, 4vw, 54px) 0;
+}
+
+.portal-page .hero-copy .eyebrow,
+.portal-page .hero-copy h1,
+.portal-page .hero-copy .hero-intro,
+.portal-page .hero-copy .hero-note,
+.portal-page .hero-copy .hero-note strong {
+    color: var(--paper);
+}
+
+.portal-page .hero-copy .eyebrow-dot {
+    background: var(--paper);
+}
+
+.portal-page .hero-copy h1 {
+    max-width: 650px;
+    font-size: clamp(3.2rem, 7vw, 6.2rem);
+    line-height: .98;
+}
+
+.portal-page .hero-copy h1 span {
+    color: var(--wash);
+    text-decoration: underline;
+    text-decoration-thickness: 3px;
+    text-underline-offset: 8px;
+}
+
+.portal-page .hero-intro {
+    max-width: 440px;
+    font-size: 1rem;
+}
+
+.portal-page .hero-note {
+    margin-top: 38px;
+}
+
+.portal-page .note-icon {
+    border: 1px solid var(--paper);
+    border-radius: 0;
+    color: var(--blue);
+    background: var(--paper);
+}
+
+.portal-page .hero-visual {
+    padding: 15px;
+    border: 2px solid var(--ink);
+    background: var(--wash);
+    box-shadow: 9px 9px 0 var(--ink);
+}
+
+.portal-page .hero-visual > img {
+    height: 400px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+}
+
+.portal-page .visual-label {
+    bottom: 29px;
+    left: -26px;
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow: 4px 4px 0 var(--ink);
+}
+
+.portal-page .label-icon {
+    border-radius: 0;
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .visual-index {
+    top: 26px;
+    right: 26px;
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--paper);
+    font-weight: 800;
+}
+
+.portal-page .intro-section,
+.portal-page .news-section,
+.portal-page .videos-section,
+.portal-page .contact-section {
+    background: var(--paper);
+}
+
+.portal-page .projects-section,
+.portal-page .agenda-section,
+.portal-page .map-section {
+    border-block: 1px solid var(--ink);
+    background: var(--wash);
+}
+
+.portal-page .intro-section {
+    padding-top: 90px;
+}
+
+.portal-page .intro-grid {
+    align-items: center;
+}
+
+.portal-page .intro-grid > div:first-child {
+    padding: 8px 0 8px 20px;
+    border-left: 5px solid var(--blue);
+}
+
+.portal-page .intro-grid > div:first-child > p:last-child,
+.portal-page .intro-text p,
+.portal-page .section-heading > p,
+.portal-page .contact-grid > div > p:not(.eyebrow),
+.portal-page .agenda-intro > p:not(.eyebrow) {
+    color: var(--muted);
+}
+
+.portal-page .intro-image {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    box-shadow: 6px 6px 0 var(--blue);
+}
+
+.portal-page .featured-members {
+    margin-top: 82px;
+    padding-top: 34px;
+    border-top: 2px solid var(--ink);
+}
+
+.portal-page .section-heading {
+    align-items: end;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--ink);
+}
+
+.portal-page .section-heading h2 {
+    font-size: clamp(2rem, 3.6vw, 3rem);
+}
+
+.portal-page .project-grid {
+    gap: 14px;
+}
+
+.portal-page .project-card {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    box-shadow: 5px 5px 0 var(--ink);
+}
+
+.portal-page .project-feature {
+    grid-row: span 2;
+}
+
+.portal-page .project-card::after {
+    background: linear-gradient(transparent, rgba(23, 26, 23, .86));
+}
+
+.portal-page .project-caption > span {
+    color: var(--wash);
+}
+
+.portal-page .image-preview-dialog {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+    box-shadow: 8px 8px 0 var(--ink);
+}
+
+.portal-page .image-preview-close {
+    border: 2px solid var(--ink);
+    border-radius: 0;
+}
+
+.portal-page .content-card,
+.portal-page .video-card,
+.portal-page .calendar,
+.portal-page .map-layout,
+.portal-page .form-card,
+.portal-page .featured-member-card {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow: 5px 5px 0 rgba(23, 26, 23, .16);
+}
+
+.portal-page .content-card {
+    padding: 25px;
+}
+
+.portal-page .content-card:hover {
+    box-shadow: 7px 7px 0 rgba(23, 26, 23, .23);
+}
+
+.portal-page .featured-member-photo,
+.portal-page .featured-member-photo-placeholder {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+}
+
+.portal-page .featured-member-photo-placeholder {
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .calendar {
+    padding: 18px;
+}
+
+.portal-page .calendar-nav,
+.portal-page .calendar-today {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--paper);
+}
+
+.portal-page .calendar-nav:hover,
+.portal-page .calendar-today:hover {
+    border-color: var(--ink);
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .calendar-grid {
+    border-color: var(--ink);
+}
+
+.portal-page .calendar-day {
+    border-color: var(--line);
+    background: var(--paper);
+}
+
+.portal-page .calendar-day.is-outside {
+    background: var(--wash);
+}
+
+.portal-page .calendar-day.is-today,
+.portal-page .calendar-day-details {
+    background: var(--wash);
+}
+
+.portal-page .calendar-day.is-selected {
+    box-shadow: inset 0 0 0 2px var(--blue);
+}
+
+.portal-page .calendar-date {
+    border-radius: 0;
+}
+
+.portal-page .calendar-day.is-today .calendar-date {
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .calendar-event,
+.portal-page .calendar-more {
+    border-radius: 0;
+}
+
+.portal-page .video-card {
+    overflow: hidden;
+}
+
+.portal-page .video-info {
+    padding: 18px;
+    border-top: 1px solid var(--ink);
+}
+
+.portal-page .map-layout {
+    overflow: hidden;
+}
+
+.portal-page .map-frame {
+    background: var(--blue-soft);
+}
+
+.portal-page .map-sidebar {
+    border-left: 1px solid var(--ink);
+}
+
+.portal-page .map-pin {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .map-points button {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+}
+
+.portal-page .map-points button[aria-current="true"],
+.portal-page .map-points button:hover {
+    border-color: var(--ink);
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.portal-page .form-card {
+    padding: 28px;
+}
+
+.portal-page .form-card label {
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.portal-page .form-card input,
+.portal-page .form-card textarea,
+.portal-page .form-card select {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--wash);
+}
+
+.portal-page .form-card input:focus,
+.portal-page .form-card textarea:focus,
+.portal-page .form-card select:focus {
+    border-color: var(--blue);
+    box-shadow: 4px 4px 0 var(--blue);
+}
+
+.portal-page .form-card input::placeholder,
+.portal-page .form-card textarea::placeholder {
+    color: #73766e;
+}
+
+.portal-page .site-footer,
+.management-page .site-footer {
+    border-top: 2px solid var(--ink);
+    background: var(--ink);
+}
+
+.portal-page .footer-inner > p,
+.portal-page .footer-inner > span,
+.management-page .footer-inner > p,
+.management-page .footer-inner > span {
+    color: var(--wash);
+}
+
+.portal-page .footer-brand strong {
+    color: var(--paper);
+}
+
+.portal-page .footer-brand small {
+    color: var(--wash);
+}
+
+.management-page .management-main {
+    padding-top: 45px;
+}
+
+.management-page .management-welcome {
+    position: relative;
+    margin-bottom: 40px;
+    padding: clamp(30px, 5vw, 56px);
+    overflow: hidden;
+    border: 2px solid var(--ink);
+    color: var(--paper);
+    background-color: var(--blue);
+    background-image: linear-gradient(rgba(245, 241, 231, .07) 1px, transparent 1px), linear-gradient(90deg, rgba(245, 241, 231, .07) 1px, transparent 1px);
+    background-size: 32px 32px;
+    box-shadow: 8px 8px 0 var(--ink);
+}
+
+.management-page .management-welcome::after {
+    position: absolute;
+    top: 18%;
+    right: 10%;
+    width: 100px;
+    height: 100px;
+    border: 2px solid var(--wash);
+    content: "";
+    transform: rotate(45deg);
+}
+
+.management-page .management-welcome > * {
+    position: relative;
+    z-index: 1;
+}
+
+.management-page .management-welcome .eyebrow,
+.management-page .management-welcome h1,
+.management-page .management-welcome > p:last-child {
+    color: var(--paper);
+}
+
+.management-page .management-welcome .eyebrow-dot {
+    background: var(--paper);
+}
+
+.management-page .management-welcome h1 {
+    margin-bottom: 10px;
+    font-size: clamp(2.6rem, 5vw, 4.4rem);
+    line-height: 1;
+}
+
+.management-page .management-welcome h1 span {
+    color: var(--wash);
+}
+
+.management-page .management-welcome > p:last-child {
+    max-width: 540px;
+    margin-bottom: 0;
+    color: rgba(245, 241, 231, .82);
+}
+
+.management-page .manage-section {
+    margin-top: 48px;
+}
+
+.management-page .section-heading {
+    align-items: end;
+    padding-bottom: 13px;
+    border-bottom: 2px solid var(--ink);
+}
+
+.management-page .compact-heading {
+    margin-bottom: 20px;
+}
+
+.management-page .compact-heading h2 {
+    font-size: clamp(1.55rem, 3vw, 2rem);
+}
+
+.management-page .form-card,
+.management-page .content-card,
+.management-page .featured-team-slot {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    background: var(--paper);
+    box-shadow: 5px 5px 0 rgba(23, 26, 23, .16);
+}
+
+.management-page .form-card {
+    padding: 25px;
+}
+
+.management-page .form-card label {
+    font-size: .72rem;
+    font-weight: 800;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.management-page .form-card input,
+.management-page .form-card textarea,
+.management-page .form-card select {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--wash);
+}
+
+.management-page .form-card input:focus,
+.management-page .form-card textarea:focus,
+.management-page .form-card select:focus {
+    border-color: var(--blue);
+    box-shadow: 4px 4px 0 var(--blue);
+}
+
+.management-page .form-card input::placeholder,
+.management-page .form-card textarea::placeholder {
+    color: #73766e;
+}
+
+.management-page .management-actions button {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    color: var(--ink);
+    background: var(--wash);
+}
+
+.management-page .management-actions button:hover {
+    border-color: var(--ink);
+    color: var(--paper);
+    background: var(--blue);
+}
+
+.management-page .managed-gallery-image,
+.management-page .managed-member-photo {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+}
+
+.management-page .managed-video-preview {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+}
+
+.management-page .featured-team-slot {
+    padding: 18px;
+}
+
+.management-page .featured-team-slot.is-empty {
+    border-style: dashed;
+}
+
+.management-page .map-preview {
+    border: 1px solid var(--ink);
+    border-radius: 0;
+    box-shadow: 5px 5px 0 rgba(23, 26, 23, .16);
+}
+
+.portal-page :focus-visible,
+.management-page :focus-visible {
+    outline: 3px solid var(--blue);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .portal-page .main-nav {
+        gap: 10px;
+    }
+    .portal-page .main-nav a {
+        font-size: .7rem;
+    }
+}
+
+@media (max-width: 720px) {
+    .portal-page .main-nav {
+        top: 69px;
+        border-bottom: 2px solid var(--ink);
+        background: var(--wash);
+    }
+    .portal-page .main-nav a {
+        padding: 11px 4px;
+        font-size: .9rem;
+    }
+    .portal-page .main-nav .nav-account {
+        margin-top: 5px;
+        border: 1px solid var(--ink);
+    }
+    .portal-page .hero {
+        padding-block: 50px 58px;
+    }
+    .portal-page .hero-visual > img {
+        height: 300px;
+    }
+    .portal-page .visual-label {
+        left: 8px;
+        bottom: 20px;
+    }
+    .portal-page .project-feature {
+        grid-row: auto;
+    }
+    .portal-page .map-sidebar {
+        border-top: 1px solid var(--ink);
+        border-left: 0;
+    }
+    .management-page .management-welcome::after {
+        top: 12%;
+        right: 7%;
+        width: 56px;
+        height: 56px;
+    }
+    .management-page .management-main {
+        padding-top: 30px;
+    }
+}
+
+@media (max-width: 440px) {
+    .portal-page .hero-copy h1 {
+        font-size: clamp(2.65rem, 12vw, 3.6rem);
+    }
+    .portal-page .hero-visual {
+        padding: 9px;
+    }
+    .portal-page .section-heading h2 {
+        font-size: 2rem;
+    }
+    .portal-page .form-card,
+    .management-page .form-card {
+        padding: 20px;
+    }
+    .management-page .management-welcome {
+        padding: 28px 22px;
+    }
+    .management-page .management-welcome h1 {
+        max-width: 75%;
+        font-size: 2.5rem;
+    }
 }
 
 @media (prefers-reduced-motion: reduce) {
